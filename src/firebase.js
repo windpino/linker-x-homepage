@@ -12,7 +12,29 @@ const firebaseConfig = {
   measurementId: import.meta.env.VITE_FIREBASE_MEASUREMENT_ID
 };
 
-const app = initializeApp(firebaseConfig);
-export const db = getFirestore(app);
-export const auth = getAuth(app);
+let app;
+let db = null;
+let auth = null;
+
+try {
+  if (!firebaseConfig.apiKey) {
+    throw new Error("Firebase API Key is missing. Please configure VITE_FIREBASE_API_KEY in Vercel settings.");
+  }
+  app = initializeApp(firebaseConfig);
+  db = getFirestore(app);
+  auth = getAuth(app);
+} catch (error) {
+  console.error("Firebase Initialization Error:", error);
+  // Fallback objects to prevent React from crashing (White Screen)
+  db = {};
+  auth = {
+    onAuthStateChanged: (cb) => {
+      // Simulate auth loading finished with null user
+      setTimeout(() => cb(null), 100);
+      return () => {};
+    }
+  };
+}
+
+export { db, auth };
 export default app;
