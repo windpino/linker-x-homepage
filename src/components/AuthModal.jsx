@@ -122,6 +122,10 @@ const AuthModal = ({ onClose, initialTab = 'signup' }) => {
     } catch (err) {
       console.error(err);
       setErrorMsg('구글 로그인에 실패했습니다. 다시 시도해 주세요.');
+    } finally {
+      setIsLoading(false);
+    }
+  };
 
 
   // 3. Regular Email signup/login with email verification link trigger
