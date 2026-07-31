@@ -1,0 +1,21 @@
+{
+  "short_name": "Linker X",
+  "name": "Linker X - 물류관리 시스템",
+  "icons": [
+    {
+      "src": "/logo192.png",
+      "type": "image/png",
+      "sizes": "192x192"
+    },
+    {
+      "src": "/logo512.png",
+      "type": "image/png",
+      "sizes": "512x512"
+    }
+  ],
+  "start_url": "/",
+  "background_color": "#020617",
+  "theme_color": "#3b82f6",
+  "display": "standalone",
+  "orientation": "portrait"
+}
