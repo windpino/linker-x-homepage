@@ -122,54 +122,7 @@ const AuthModal = ({ onClose, initialTab = 'signup' }) => {
     } catch (err) {
       console.error(err);
       setErrorMsg('구글 로그인에 실패했습니다. 다시 시도해 주세요.');
-    } finally {
-      setIsLoading(false);
-    }
-  };
 
-  // 2. Naver OAuth Sign-in Flow (Federated/Direct Custom Gateway popup mock)
-  const handleNaverAuth = async () => {
-    setErrorMsg('');
-    setInfoMsg('');
-    setIsLoading(true);
-    
-    // Naver login authentication popup mimic (Vercel subview integration)
-    const mockEmail = prompt("네이버 계정 연동을 위해 네이버 이메일 주소를 입력해 주세요:", "naver_user@naver.com");
-    if (!mockEmail || !mockEmail.includes('@')) {
-      setErrorMsg('유효한 이메일을 입력해야 네이버 연동이 가능합니다.');
-      setIsLoading(false);
-      return;
-    }
-
-    try {
-      // Mimic federated authentication password
-      const tempPassword = "NaverOAuthPassword_1234!";
-      let user;
-      
-      try {
-        // Try logging in first
-        const userCredential = await signInWithEmailAndPassword(auth, mockEmail, tempPassword);
-        user = userCredential.user;
-      } catch (loginErr) {
-        // If not found, create new user
-        if (loginErr.code === 'auth/user-not-found' || loginErr.code === 'auth/invalid-credential') {
-          const userCredential = await createUserWithEmailAndPassword(auth, mockEmail, tempPassword);
-          user = userCredential.user;
-          await createOrGetUserDoc(user, referredByInput);
-          alert('네이버 계정으로 간편 가입이 완료되었습니다!\n(최초 가입 1개월 무료 자동 적용)');
-        } else {
-          throw loginErr;
-        }
-      }
-
-      onClose();
-    } catch (err) {
-      console.error(err);
-      setErrorMsg('네이버 로그인 처리 중 문제가 발생했습니다: ' + err.message);
-    } finally {
-      setIsLoading(false);
-    }
-  };
 
   // 3. Regular Email signup/login with email verification link trigger
   const handleAuth = async (e) => {
@@ -379,33 +332,21 @@ const AuthModal = ({ onClose, initialTab = 'signup' }) => {
           </div>
 
           {/* Social Sign-In Buttons */}
-          <div className="grid grid-cols-2 gap-3.5">
+          <div className="w-full">
             {/* Google button */}
             <button
               type="button"
               onClick={handleGoogleAuth}
               disabled={isLoading}
-              className="bg-slate-950 hover:bg-slate-900 border border-slate-800 hover:border-slate-750 text-slate-300 hover:text-white font-black text-xs py-3.5 px-4 rounded-2xl flex items-center justify-center gap-2 transition-all shadow-md active:scale-98"
+              className="w-full bg-slate-950 hover:bg-slate-900 border border-slate-800 hover:border-slate-750 text-slate-300 hover:text-white font-black text-xs py-3.5 px-4 rounded-2xl flex items-center justify-center gap-2.5 transition-all shadow-md active:scale-98"
             >
-              <svg viewBox="0 0 24 24" width="16" height="16" xmlns="http://www.w3.org/2000/svg">
+              <svg viewBox="0 0 24 24" width="16" height="16" xmlns="http://www.w3.org/2000/svg" className="shrink-0">
                 <path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" fill="#4285F4"/>
                 <path d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" fill="#34A853"/>
                 <path d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.06H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.94l2.85-2.22.81-.63z" fill="#FBBC05"/>
                 <path d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.06l3.66 2.84c.87-2.6 3.3-4.52 6.16-4.52z" fill="#EA4335"/>
               </svg>
-              Google
-            </button>
-
-            {/* Naver button */}
-            <button
-              type="button"
-              onClick={handleNaverAuth}
-              disabled={isLoading}
-              className="bg-[#03c75a] hover:bg-[#02b34f] text-white font-black text-xs py-3.5 px-4 rounded-2xl flex items-center justify-center gap-2 transition-all shadow-md active:scale-98"
-            >
-              {/* Naver N Logo */}
-              <span className="font-extrabold text-[13px] tracking-tighter leading-none shrink-0" style={{ fontFamily: 'Georgia, serif' }}>N</span>
-              네이버로 가입
+              <span>{activeTab === 'signup' ? 'Google 계정으로 3초 가입하기' : 'Google 계정으로 로그인'}</span>
             </button>
           </div>
 
