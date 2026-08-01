@@ -193,30 +193,30 @@ const AuthModal = ({ onClose, initialTab = 'signup' }) => {
   return (
     <div
       className="fixed inset-0 z-50 flex items-center justify-center p-4 animate-fade-in"
-      style={{ backgroundColor: 'rgba(2, 6, 23, 0.75)', backdropFilter: 'blur(10px)' }}
+      style={{ backgroundColor: 'rgba(2, 6, 23, 0.6)', backdropFilter: 'blur(8px)' }}
     >
-      <div className="relative w-full max-w-md bg-slate-900 border border-slate-800 rounded-[32px] shadow-[0_25px_60px_-15px_rgba(0,0,0,0.8)] overflow-hidden animate-in fade-in zoom-in-95 duration-200">
+      <div className="relative w-full max-w-md bg-white border border-slate-250/60 rounded-[32px] shadow-[0_25px_60px_-15px_rgba(2,6,23,0.12)] overflow-hidden animate-in fade-in zoom-in-95 duration-200">
         
-        {/* Glowing aura at top */}
-        <div className="absolute top-0 left-1/2 -translate-x-1/2 w-48 h-1 bg-gradient-to-r from-blue-500 to-indigo-500 blur-sm" />
+        {/* Top brand line */}
+        <div className="absolute top-0 left-0 w-full h-1.5 bg-gradient-to-r from-blue-600 to-indigo-650" />
 
         {/* Close Button */}
         <button
           onClick={onClose}
-          className="absolute right-6 top-6 text-slate-400 hover:text-white p-2 rounded-xl hover:bg-slate-800 transition-all z-10"
+          className="absolute right-6 top-6 text-slate-400 hover:text-slate-700 p-2 rounded-xl hover:bg-slate-50 transition-all z-10"
         >
           <X className="h-5 w-5" />
         </button>
 
         {/* Header Tabs */}
-        <div className="flex border-b border-slate-800/80 px-8 pt-8">
+        <div className="flex border-b border-slate-100 px-8 pt-8">
           <button
             type="button"
             onClick={() => { setActiveTab('signup'); setErrorMsg(''); setInfoMsg(''); }}
-            className={`flex-1 pb-4 text-sm font-black transition-all border-b-2 flex items-center justify-center gap-2 ${
+            className={`flex-1 pb-4 text-sm transition-all border-b-2 flex items-center justify-center gap-2 ${
               activeTab === 'signup' 
-                ? 'border-blue-500 text-white' 
-                : 'border-transparent text-slate-500 hover:text-slate-300'
+                ? 'border-blue-600 text-slate-950 font-black' 
+                : 'border-transparent text-slate-400 hover:text-slate-600 font-bold'
             }`}
           >
             <UserPlus size={16} />
@@ -225,10 +225,10 @@ const AuthModal = ({ onClose, initialTab = 'signup' }) => {
           <button
             type="button"
             onClick={() => { setActiveTab('login'); setErrorMsg(''); setInfoMsg(''); }}
-            className={`flex-1 pb-4 text-sm font-black transition-all border-b-2 flex items-center justify-center gap-2 ${
+            className={`flex-1 pb-4 text-sm transition-all border-b-2 flex items-center justify-center gap-2 ${
               activeTab === 'login' 
-                ? 'border-blue-500 text-white' 
-                : 'border-transparent text-slate-500 hover:text-slate-300'
+                ? 'border-blue-600 text-slate-950 font-black' 
+                : 'border-transparent text-slate-400 hover:text-slate-600 font-bold'
             }`}
           >
             <LogIn size={16} />
@@ -241,41 +241,42 @@ const AuthModal = ({ onClose, initialTab = 'signup' }) => {
           
           {/* Tagline Info */}
           {activeTab === 'signup' && (
-            <div className="bg-blue-500/10 border border-blue-500/20 rounded-2xl p-3.5 flex items-start gap-2.5">
-              <Sparkles className="h-4.5 w-4.5 text-blue-400 shrink-0 mt-0.5" />
+            <div className="bg-blue-50 border border-blue-100/80 rounded-2xl p-3.5 flex items-start gap-2.5">
+              <Sparkles className="h-4.5 w-4.5 text-blue-600 shrink-0 mt-0.5" />
               <div>
-                <p className="text-[11px] text-blue-300 font-extrabold">가입 즉시 1개월 무료 제공!</p>
-                <p className="text-[9.5px] text-slate-400 font-bold mt-0.5">추가로 친구 초대 시 평생 10% 요금 할인이 누적됩니다.</p>
+                <p className="text-[11px] text-blue-700 font-extrabold">가입 즉시 1개월 무료 제공!</p>
+                <p className="text-[9.5px] text-slate-500 font-bold mt-0.5">추가로 친구 초대 시 평생 10% 요금 할인이 누적됩니다.</p>
               </div>
             </div>
           )}
 
           {/* Error Message */}
           {errorMsg && (
-            <div className="bg-red-500/10 border border-red-500/25 rounded-2xl p-3 text-[11px] font-bold text-red-400">
-              ⚠️ {errorMsg}
+            <div className="bg-red-50 border border-red-100 rounded-2xl p-3.5 text-[11px] font-bold text-red-650 flex items-center gap-1.5">
+              <AlertCircle size={14} className="shrink-0 text-red-500" />
+              <span>{errorMsg}</span>
             </div>
           )}
 
           {/* Info/Verification Message */}
           {infoMsg && (
-            <div className="bg-emerald-500/10 border border-emerald-500/25 text-emerald-400 rounded-2xl p-3.5 text-[11px] font-bold leading-relaxed flex gap-2">
-              <AlertCircle size={15} className="shrink-0 mt-0.5" />
+            <div className="bg-emerald-50 border border-emerald-100 text-emerald-700 rounded-2xl p-3.5 text-[11px] font-bold leading-relaxed flex gap-2">
+              <AlertCircle size={15} className="shrink-0 mt-0.5 text-emerald-600" />
               <span>{infoMsg}</span>
             </div>
           )}
 
           {/* Email input */}
           <div>
-            <label className="block text-[10px] font-extrabold text-slate-400 uppercase tracking-wider mb-2">이메일</label>
+            <label className="block text-[10px] font-extrabold text-slate-500 uppercase tracking-wider mb-2">이메일</label>
             <div className="relative group">
-              <Mail className="absolute left-3.5 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-500 group-focus-within:text-blue-400 transition-colors" />
+              <Mail className="absolute left-3.5 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-400 group-focus-within:text-blue-600 transition-colors" />
               <input
                 type="email"
                 value={email}
                 onChange={e => setEmail(e.target.value)}
                 placeholder="your@email.com"
-                className="w-full bg-slate-950 border border-slate-800 focus:border-blue-500 focus:bg-slate-950/40 rounded-2xl py-3.5 pl-10.5 pr-4 text-white text-[13px] font-bold outline-none transition-all focus:ring-4 focus:ring-blue-500/5 placeholder:text-slate-600 placeholder:font-normal"
+                className="w-full bg-slate-50 border border-slate-200/80 focus:border-blue-600 focus:bg-white rounded-2xl py-3.5 pl-10.5 pr-4 text-slate-900 text-[13px] font-bold outline-none transition-all focus:ring-4 focus:ring-blue-600/5 placeholder:text-slate-400 placeholder:font-normal"
                 required
               />
             </div>
@@ -283,15 +284,15 @@ const AuthModal = ({ onClose, initialTab = 'signup' }) => {
 
           {/* Password input */}
           <div>
-            <label className="block text-[10px] font-extrabold text-slate-400 uppercase tracking-wider mb-2">비밀번호</label>
+            <label className="block text-[10px] font-extrabold text-slate-500 uppercase tracking-wider mb-2">비밀번호</label>
             <div className="relative group">
-              <Lock className="absolute left-3.5 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-500 group-focus-within:text-blue-400 transition-colors" />
+              <Lock className="absolute left-3.5 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-400 group-focus-within:text-blue-600 transition-colors" />
               <input
                 type="password"
                 value={password}
                 onChange={e => setPassword(e.target.value)}
                 placeholder="6자리 이상 비밀번호"
-                className="w-full bg-slate-950 border border-slate-800 focus:border-blue-500 focus:bg-slate-950/40 rounded-2xl py-3.5 pl-10.5 pr-4 text-white text-[13px] font-bold outline-none transition-all focus:ring-4 focus:ring-blue-500/5 placeholder:text-slate-600 placeholder:font-normal"
+                className="w-full bg-slate-50 border border-slate-200/80 focus:border-blue-600 focus:bg-white rounded-2xl py-3.5 pl-10.5 pr-4 text-slate-900 text-[13px] font-bold outline-none transition-all focus:ring-4 focus:ring-blue-600/5 placeholder:text-slate-400 placeholder:font-normal"
                 required
               />
             </div>
@@ -301,19 +302,19 @@ const AuthModal = ({ onClose, initialTab = 'signup' }) => {
           {activeTab === 'signup' && (
             <div>
               <div className="flex items-center justify-between mb-2">
-                <label className="block text-[10px] font-extrabold text-slate-400 uppercase tracking-wider">추천인 코드 (선택)</label>
-                <span className="text-[9px] font-bold text-amber-400 flex items-center gap-0.5">
-                  <Gift size={10} /> 할인 적용
+                <label className="block text-[10px] font-extrabold text-slate-500 uppercase tracking-wider">추천인 코드 (선택)</label>
+                <span className="text-[9px] font-bold text-amber-600 flex items-center gap-0.5">
+                  <Gift size={10} className="text-amber-500" /> 할인 적용
                 </span>
               </div>
               <div className="relative group">
-                <Gift className="absolute left-3.5 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-500 group-focus-within:text-blue-400 transition-colors" />
+                <Gift className="absolute left-3.5 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-400 group-focus-within:text-blue-600 transition-colors" />
                 <input
                   type="text"
                   value={referredByInput}
                   onChange={e => setReferredByInput(e.target.value)}
-                  placeholder="예: LX9D8F (초대링크 자동 반영)"
-                  className="w-full bg-slate-950 border border-slate-800 focus:border-blue-500 focus:bg-slate-950/40 rounded-2xl py-3.5 pl-10.5 pr-4 text-white text-[13px] font-bold outline-none transition-all focus:ring-4 focus:ring-blue-500/5 placeholder:text-slate-600 placeholder:font-normal"
+                  placeholder="LX9D8F (초대링크 자동 적용)"
+                  className="w-full bg-slate-50 border border-slate-200/80 focus:border-blue-600 focus:bg-white rounded-2xl py-3.5 pl-10.5 pr-4 text-slate-900 text-[13px] font-bold outline-none transition-all focus:ring-4 focus:ring-blue-600/5 placeholder:text-slate-400 placeholder:font-normal"
                 />
               </div>
             </div>
@@ -323,16 +324,16 @@ const AuthModal = ({ onClose, initialTab = 'signup' }) => {
           <button
             type="submit"
             disabled={isLoading}
-            className="w-full bg-gradient-to-r from-blue-600 to-indigo-650 hover:from-blue-500 hover:to-indigo-550 disabled:opacity-60 text-white font-extrabold py-4 rounded-2xl flex items-center justify-center gap-2 shadow-lg shadow-blue-500/10 hover:shadow-blue-500/25 transition-all text-sm mt-3"
+            className="w-full bg-gradient-to-r from-blue-600 to-indigo-650 hover:from-blue-500 hover:to-indigo-550 disabled:opacity-60 text-white font-extrabold py-4 rounded-2xl flex items-center justify-center gap-2 shadow-lg shadow-blue-600/12 hover:shadow-blue-600/25 transition-all text-sm mt-3"
           >
             {isLoading ? '요청 처리 중...' : activeTab === 'signup' ? '가입하고 1개월 혜택 받기' : '로그인'}
           </button>
 
           {/* Social Sign-In Divider */}
           <div className="flex items-center my-4">
-            <div className="flex-grow border-t border-slate-800/80" />
-            <span className="px-3 text-[10px] text-slate-500 font-extrabold uppercase tracking-widest select-none">또는 간편 로그인</span>
-            <div className="flex-grow border-t border-slate-800/80" />
+            <div className="flex-grow border-t border-slate-100" />
+            <span className="px-3 text-[10px] text-slate-400 font-extrabold uppercase tracking-widest select-none">또는 간편 로그인</span>
+            <div className="flex-grow border-t border-slate-100" />
           </div>
 
           {/* Social Sign-In Buttons */}
@@ -342,7 +343,7 @@ const AuthModal = ({ onClose, initialTab = 'signup' }) => {
               type="button"
               onClick={handleGoogleAuth}
               disabled={isLoading}
-              className="w-full bg-slate-950 hover:bg-slate-900 border border-slate-800 hover:border-slate-750 text-slate-300 hover:text-white font-black text-xs py-3.5 px-4 rounded-2xl flex items-center justify-center gap-2.5 transition-all shadow-md active:scale-98"
+              className="w-full bg-white hover:bg-slate-50 border border-slate-200 hover:border-slate-300 text-slate-700 hover:text-slate-950 font-black text-xs py-3.5 px-4 rounded-2xl flex items-center justify-center gap-2.5 transition-all shadow-sm active:scale-98"
             >
               <svg viewBox="0 0 24 24" width="16" height="16" xmlns="http://www.w3.org/2000/svg" className="shrink-0">
                 <path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" fill="#4285F4"/>
@@ -355,7 +356,7 @@ const AuthModal = ({ onClose, initialTab = 'signup' }) => {
           </div>
 
           {/* Guide text */}
-          <p className="text-center text-[10px] text-slate-500 font-bold">
+          <p className="text-center text-[10px] text-slate-400 font-bold">
             {activeTab === 'signup' 
               ? '가입 시 개인정보 수집 및 링커엑스 무료체험 약관에 동의하게 됩니다.' 
               : '비밀번호를 잃어버리셨나요? 고객지원 센터(1566-8680)로 문의해 주세요.'
