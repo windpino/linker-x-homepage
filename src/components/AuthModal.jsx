@@ -198,7 +198,7 @@ const AuthModal = ({ onClose, initialTab = 'signup' }) => {
       <div className="relative w-full max-w-md bg-white border border-slate-250/60 rounded-[32px] shadow-[0_25px_60px_-15px_rgba(2,6,23,0.12)] overflow-hidden animate-in fade-in zoom-in-95 duration-200">
         
         {/* Top brand line */}
-        <div className="absolute top-0 left-0 w-full h-1.5 bg-gradient-to-r from-blue-600 to-indigo-650" />
+        <div className="absolute top-0 left-0 w-full h-1.5 bg-blue-600" />
 
         {/* Close Button */}
         <button
@@ -276,7 +276,7 @@ const AuthModal = ({ onClose, initialTab = 'signup' }) => {
                 value={email}
                 onChange={e => setEmail(e.target.value)}
                 placeholder="your@email.com"
-                className="w-full bg-slate-50 border border-slate-200/80 focus:border-blue-600 focus:bg-white rounded-2xl py-3.5 pl-10.5 pr-4 text-slate-900 text-[13px] font-bold outline-none transition-all focus:ring-4 focus:ring-blue-600/5 placeholder:text-slate-400 placeholder:font-normal"
+                className="w-full bg-slate-50 border border-slate-200/80 focus:border-blue-600 focus:bg-white rounded-2xl py-3.5 pl-12 pr-4 text-slate-900 text-[13px] font-bold outline-none transition-all focus:ring-4 focus:ring-blue-600/5 placeholder:text-slate-400 placeholder:font-normal"
                 required
               />
             </div>
@@ -292,7 +292,7 @@ const AuthModal = ({ onClose, initialTab = 'signup' }) => {
                 value={password}
                 onChange={e => setPassword(e.target.value)}
                 placeholder="6자리 이상 비밀번호"
-                className="w-full bg-slate-50 border border-slate-200/80 focus:border-blue-600 focus:bg-white rounded-2xl py-3.5 pl-10.5 pr-4 text-slate-900 text-[13px] font-bold outline-none transition-all focus:ring-4 focus:ring-blue-600/5 placeholder:text-slate-400 placeholder:font-normal"
+                className="w-full bg-slate-50 border border-slate-200/80 focus:border-blue-600 focus:bg-white rounded-2xl py-3.5 pl-12 pr-4 text-slate-900 text-[13px] font-bold outline-none transition-all focus:ring-4 focus:ring-blue-600/5 placeholder:text-slate-400 placeholder:font-normal"
                 required
               />
             </div>
@@ -314,7 +314,7 @@ const AuthModal = ({ onClose, initialTab = 'signup' }) => {
                   value={referredByInput}
                   onChange={e => setReferredByInput(e.target.value)}
                   placeholder="LX9D8F (초대링크 자동 적용)"
-                  className="w-full bg-slate-50 border border-slate-200/80 focus:border-blue-600 focus:bg-white rounded-2xl py-3.5 pl-10.5 pr-4 text-slate-900 text-[13px] font-bold outline-none transition-all focus:ring-4 focus:ring-blue-600/5 placeholder:text-slate-400 placeholder:font-normal"
+                  className="w-full bg-slate-50 border border-slate-200/80 focus:border-blue-600 focus:bg-white rounded-2xl py-3.5 pl-12 pr-4 text-slate-900 text-[13px] font-bold outline-none transition-all focus:ring-4 focus:ring-blue-600/5 placeholder:text-slate-400 placeholder:font-normal"
                 />
               </div>
             </div>
@@ -324,7 +324,7 @@ const AuthModal = ({ onClose, initialTab = 'signup' }) => {
           <button
             type="submit"
             disabled={isLoading}
-            className="w-full bg-gradient-to-r from-blue-600 to-indigo-650 hover:from-blue-500 hover:to-indigo-550 disabled:opacity-60 text-white font-extrabold py-4 rounded-2xl flex items-center justify-center gap-2 shadow-lg shadow-blue-600/12 hover:shadow-blue-600/25 transition-all text-sm mt-3"
+            className="w-full bg-blue-600 hover:bg-blue-700 disabled:opacity-60 text-white font-extrabold py-4 rounded-2xl flex items-center justify-center gap-2 shadow-md shadow-blue-600/10 hover:shadow-blue-600/20 transition-all text-sm mt-3"
           >
             {isLoading ? '요청 처리 중...' : activeTab === 'signup' ? '가입하고 1개월 혜택 받기' : '로그인'}
           </button>
