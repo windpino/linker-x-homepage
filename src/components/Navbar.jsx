@@ -41,12 +41,16 @@ const Navbar = ({ onOpenInquiry, onNavigateToSupport, onNavigateToHome, user, su
 
   // Trigger PWA installation
   const handleInstallApp = async () => {
-    if (deferredPrompt) {
-      deferredPrompt.prompt();
-      const { outcome } = await deferredPrompt.userChoice;
+    // 1) React state or 2) global window cache
+    const promptEvent = deferredPrompt || window.deferredPrompt;
+
+    if (promptEvent) {
+      promptEvent.prompt();
+      const { outcome } = await promptEvent.userChoice;
       if (outcome === 'accepted') {
         console.log('PWA installation accepted by user.');
         setDeferredPrompt(null);
+        window.deferredPrompt = null;
       }
     } else {
       // Fallback: Show visual popup guide for browsers that don't support programmatic prompting (e.g. Safari, iOS)
@@ -131,7 +135,7 @@ const Navbar = ({ onOpenInquiry, onNavigateToSupport, onNavigateToHome, user, su
             {/* Linker X Installation Trigger Button */}
             <button 
               onClick={handleInstallApp}
-              className="bg-gradient-to-r from-emerald-600 to-teal-700 hover:from-emerald-500 hover:to-teal-650 text-white px-4 py-2 rounded-lg text-xs font-black flex items-center gap-1.5 shadow-sm shadow-emerald-500/10 hover:shadow-emerald-500/25 transition-all"
+              className="bg-emerald-600 hover:bg-emerald-700 text-white px-4 py-2 rounded-lg text-xs font-black flex items-center gap-1.5 shadow-sm shadow-emerald-600/10 hover:shadow-emerald-600/20 transition-all"
             >
               <Download className="h-3.5 w-3.5" />
               <span>링커엑스 설치</span>
@@ -203,7 +207,7 @@ const Navbar = ({ onOpenInquiry, onNavigateToSupport, onNavigateToHome, user, su
               {/* Mobile app install trigger */}
               <button 
                 onClick={handleInstallApp}
-                className="w-full text-center py-2.5 rounded-lg bg-emerald-600 text-white font-bold hover:bg-emerald-500 flex items-center justify-center gap-1.5"
+                className="w-full text-center py-2.5 rounded-lg bg-emerald-600 text-white font-bold hover:bg-emerald-700 flex items-center justify-center gap-1.5"
               >
                 <Download size={14} />
                 링커엑스 모바일 앱 설치
@@ -217,68 +221,68 @@ const Navbar = ({ onOpenInquiry, onNavigateToSupport, onNavigateToHome, user, su
       {showInstallGuide && (
         <div 
           className="fixed inset-0 z-50 flex items-center justify-center p-4 animate-fade-in"
-          style={{ backgroundColor: 'rgba(2, 6, 23, 0.75)', backdropFilter: 'blur(10px)' }}
+          style={{ backgroundColor: 'rgba(2, 6, 23, 0.6)', backdropFilter: 'blur(8px)' }}
         >
-          <div className="relative w-full max-w-md bg-slate-900 border border-slate-800 rounded-[32px] shadow-[0_25px_60px_-15px_rgba(0,0,0,0.85)] p-8 text-white overflow-hidden animate-in fade-in zoom-in-95 duration-200">
+          <div className="relative w-full max-w-md bg-white border border-slate-200/80 rounded-[32px] shadow-[0_25px_60px_-15px_rgba(2,6,23,0.12)] p-8 text-slate-900 overflow-hidden animate-in fade-in zoom-in-95 duration-200">
             {/* Top design strip */}
-            <div className="absolute top-0 left-0 w-full h-1.5 bg-gradient-to-r from-emerald-500 to-teal-500" />
+            <div className="absolute top-0 left-0 w-full h-1.5 bg-emerald-600" />
             
             {/* Close */}
             <button 
               onClick={() => setShowInstallGuide(false)}
-              className="absolute right-6 top-6 text-slate-400 hover:text-white p-2 rounded-xl hover:bg-slate-800 transition-all"
+              className="absolute right-6 top-6 text-slate-400 hover:text-slate-700 p-2 rounded-xl hover:bg-slate-50 transition-all"
             >
               <X size={18} />
             </button>
 
             <div className="text-center mt-3">
-              <div className="w-14 h-14 bg-emerald-500/10 border border-emerald-500/30 rounded-2xl flex items-center justify-center text-emerald-400 mx-auto mb-5">
+              <div className="w-14 h-14 bg-emerald-50 border border-emerald-100 rounded-2xl flex items-center justify-center text-emerald-600 mx-auto mb-5">
                 <Monitor size={28} />
               </div>
-              <h3 className="text-lg font-black text-white">링커엑스 바탕화면 앱 설치 가이드</h3>
-              <p className="text-xs text-slate-400 font-bold mt-1.5">
+              <h3 className="text-lg font-black text-slate-950">링커엑스 바탕화면 앱 설치 가이드</h3>
+              <p className="text-xs text-slate-500 font-bold mt-1.5">
                 클라우드 앱 서비스로 바탕화면에 바로 가기 앱을 생성합니다.
               </p>
             </div>
 
             {/* Instruction Steps */}
             <div className="my-8 space-y-4">
-              <div className="flex gap-3 bg-slate-950 p-4 rounded-2xl border border-slate-850">
-                <span className="w-5 h-5 rounded-full bg-emerald-600/10 border border-emerald-500/30 text-emerald-400 flex items-center justify-center text-xs font-black shrink-0 mt-0.5">1</span>
+              <div className="flex gap-3 bg-slate-50/70 p-4 rounded-2xl border border-slate-100">
+                <span className="w-5 h-5 rounded-full bg-emerald-50 border border-emerald-200 text-emerald-600 flex items-center justify-center text-xs font-black shrink-0 mt-0.5">1</span>
                 <div>
-                  <p className="text-xs text-slate-200 font-black">PC (크롬 / 웨일 / 엣지 브라우저)</p>
-                  <p className="text-[11px] text-slate-400 font-bold mt-1 leading-relaxed">
-                    주소창 오른쪽 끝에 있는 <span className="text-emerald-400 font-black">[모니터 설치 모양]</span> 아이콘을 클릭하거나, 브라우저 메뉴에서 <span className="text-emerald-400 font-black">[설치]</span>를 누르시면 바탕화면에 연두색 링커엑스 앱이 즉시 생성됩니다.
+                  <p className="text-xs text-slate-950 font-black">PC (크롬 / 웨일 / 엣지 브라우저)</p>
+                  <p className="text-[11px] text-slate-500 font-bold mt-1 leading-relaxed">
+                    주소창 오른쪽 끝에 있는 <span className="text-emerald-600 font-black">[모니터 설치 모양]</span> 아이콘을 클릭하거나, 브라우저 메뉴에서 <span className="text-emerald-600 font-black">[설치]</span>를 누르시면 바탕화면에 연두색 링커엑스 앱이 즉시 생성됩니다.
                   </p>
                 </div>
               </div>
 
-              <div className="flex gap-3 bg-slate-950 p-4 rounded-2xl border border-slate-850">
-                <span className="w-5 h-5 rounded-full bg-emerald-600/10 border border-emerald-500/30 text-emerald-400 flex items-center justify-center text-xs font-black shrink-0 mt-0.5">2</span>
+              <div className="flex gap-3 bg-slate-50/70 p-4 rounded-2xl border border-slate-100">
+                <span className="w-5 h-5 rounded-full bg-emerald-50 border border-emerald-200 text-emerald-600 flex items-center justify-center text-xs font-black shrink-0 mt-0.5">2</span>
                 <div>
-                  <p className="text-xs text-slate-200 font-black">아이폰 / iPad (Safari 브라우저)</p>
-                  <p className="text-[11px] text-slate-400 font-bold mt-1 leading-relaxed">
-                    Safari 브라우저 하단의 <span className="text-emerald-400 font-black">[공유하기 버튼 (네모 위 화살표)]</span>을 누르고 목록을 내려 <span className="text-emerald-400 font-black">[홈 화면에 추가]</span>를 터치해 주세요.
+                  <p className="text-xs text-slate-950 font-black">아이폰 / iPad (Safari 브라우저)</p>
+                  <p className="text-[11px] text-slate-500 font-bold mt-1 leading-relaxed">
+                    Safari 브라우저 하단의 <span className="text-emerald-600 font-black">[공유하기 버튼 (네모 위 화살표)]</span>을 누르고 목록을 내려 <span className="text-emerald-600 font-black">[홈 화면에 추가]</span>를 터치해 주세요.
                   </p>
                 </div>
               </div>
 
-              <div className="flex gap-3 bg-slate-950 p-4 rounded-2xl border border-slate-850">
-                <span className="w-5 h-5 rounded-full bg-emerald-600/10 border border-emerald-500/30 text-emerald-400 flex items-center justify-center text-xs font-black shrink-0 mt-0.5">3</span>
+              <div className="flex gap-3 bg-slate-50/70 p-4 rounded-2xl border border-slate-100">
+                <span className="w-5 h-5 rounded-full bg-emerald-50 border border-emerald-200 text-emerald-600 flex items-center justify-center text-xs font-black shrink-0 mt-0.5">3</span>
                 <div>
-                  <p className="text-xs text-slate-200 font-black">안드로이드 (삼성 인터넷 / 크롬)</p>
-                  <p className="text-[11px] text-slate-400 font-bold mt-1 leading-relaxed">
-                    브라우저 하단 삼선 메뉴 또는 더보기 목록에서 <span className="text-emerald-400 font-black">[앱 추가] ➔ [홈 화면]</span>을 선택해 주시면 홈 화면에 전용 앱 아이콘이 바로 생성됩니다.
+                  <p className="text-xs text-slate-950 font-black">안드로이드 (삼성 인터넷 / 크롬)</p>
+                  <p className="text-[11px] text-slate-500 font-bold mt-1 leading-relaxed">
+                    브라우저 하단 삼선 메뉴 또는 더보기 목록에서 <span className="text-emerald-600 font-black">[앱 추가] ➔ [홈 화면]</span>을 선택해 주시면 홈 화면에 전용 앱 아이콘이 바로 생성됩니다.
                   </p>
                 </div>
               </div>
             </div>
 
             {/* Quick Actions */}
-            <div className="border-t border-slate-800/80 pt-5 text-center">
+            <div className="border-t border-slate-100 pt-5 text-center">
               <button
                 onClick={() => setShowInstallGuide(false)}
-                className="w-full bg-slate-800 hover:bg-slate-750 text-white font-extrabold text-xs py-3.5 rounded-xl transition-all"
+                className="w-full bg-slate-100 hover:bg-slate-200 text-slate-700 font-extrabold text-xs py-3.5 rounded-xl transition-all"
               >
                 닫기
               </button>
