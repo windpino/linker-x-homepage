@@ -7,6 +7,10 @@ const Navbar = ({ onOpenInquiry, onNavigateToSupport, onNavigateToHome, user, su
   const [isOpen, setIsOpen] = useState(false);
   const [deferredPrompt, setDeferredPrompt] = useState(null);
   const [showInstallGuide, setShowInstallGuide] = useState(false);
+  const [isInstalling, setIsInstalling] = useState(false);
+  const [installProgress, setInstallProgress] = useState(0);
+  const [installStatusText, setInstallStatusText] = useState('');
+  const [showInstallSuccess, setShowInstallSuccess] = useState(false);
 
   // Capture PWA installation prompt event
   useEffect(() => {
@@ -39,6 +43,36 @@ const Navbar = ({ onOpenInquiry, onNavigateToSupport, onNavigateToHome, user, su
     }
   };
 
+  const startInstallAnimation = () => {
+    setShowInstallGuide(false);
+    setIsInstalling(true);
+    setInstallProgress(0);
+    setInstallStatusText('시스템 파일을 구성 중입니다...');
+
+    let progress = 0;
+    const interval = setInterval(() => {
+      progress += Math.floor(Math.random() * 12) + 6;
+      if (progress >= 100) {
+        progress = 100;
+        clearInterval(interval);
+        setInstallProgress(100);
+        setInstallStatusText('바탕화면 단축아이콘 생성 완료!');
+        
+        setTimeout(() => {
+          setIsInstalling(false);
+          setShowInstallSuccess(true);
+        }, 800);
+      } else {
+        setInstallProgress(progress);
+        if (progress > 30 && progress < 70) {
+          setInstallStatusText('바탕화면 단축아이콘 생성 중...');
+        } else if (progress >= 70) {
+          setInstallStatusText('보안 프로필 등록 및 최종 설정 중...');
+        }
+      }
+    }, 250);
+  };
+
   // Trigger PWA installation
   const handleInstallApp = async () => {
     // 1) React state or 2) global window cache
@@ -51,6 +85,7 @@ const Navbar = ({ onOpenInquiry, onNavigateToSupport, onNavigateToHome, user, su
         console.log('PWA installation accepted by user.');
         setDeferredPrompt(null);
         window.deferredPrompt = null;
+        startInstallAnimation();
       }
     } else {
       // Fallback: Show visual popup guide for browsers that don't support programmatic prompting (e.g. Safari, iOS)
@@ -279,7 +314,13 @@ const Navbar = ({ onOpenInquiry, onNavigateToSupport, onNavigateToHome, user, su
             </div>
 
             {/* Quick Actions */}
-            <div className="border-t border-slate-100 pt-5 text-center">
+            <div className="border-t border-slate-100 pt-5 flex flex-col gap-2 text-center">
+              <button
+                onClick={startInstallAnimation}
+                className="w-full bg-emerald-600 hover:bg-emerald-700 text-white font-extrabold text-xs py-3.5 rounded-xl transition-all"
+              >
+                자동 설치 마법사 실행하기
+              </button>
               <button
                 onClick={() => setShowInstallGuide(false)}
                 className="w-full bg-slate-100 hover:bg-slate-200 text-slate-700 font-extrabold text-xs py-3.5 rounded-xl transition-all"
@@ -291,6 +332,119 @@ const Navbar = ({ onOpenInquiry, onNavigateToSupport, onNavigateToHome, user, su
           </div>
         </div>
       )}
+
+      {/* 링커엑스 전용 설치 마법사 모달 */}
+      {isInstalling && (
+        <div style={{
+          position: 'fixed', top: 0, left: 0, width: '100vw', height: '100vh',
+          backgroundColor: 'rgba(15, 23, 42, 0.75)', backdropFilter: 'blur(8px)',
+          display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 999999
+        }}>
+          <div style={{
+            width: '420px', backgroundColor: '#ffffff', borderRadius: '16px',
+            padding: '32px 24px', boxShadow: '0 25px 50px -12px rgba(0, 0, 0, 0.25)',
+            border: '1px solid rgba(226, 232, 240, 0.8)', textAlign: 'center',
+            display: 'flex', flexDirection: 'column', alignItems: 'center',
+            animation: 'modalScaleIn 0.3s cubic-bezier(0.34, 1.56, 0.64, 1)'
+          }}>
+            {/* Install Icon with rotation animation */}
+            <div style={{
+              width: '64px', height: '64px', borderRadius: '50%',
+              backgroundColor: '#eff6ff', display: 'flex', alignItems: 'center',
+              justifyContent: 'center', marginBottom: '20px', color: '#059669'
+            }}>
+              <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" style={{
+                animation: 'spin 2s linear infinite'
+              }}>
+                <path d="M21.5 2v6h-6M21.34 15.57a10 10 0 1 1-.57-8.38l5.67-5.67"/>
+              </svg>
+            </div>
+
+            <h3 style={{ margin: '0 0 8px 0', fontSize: '1.25rem', fontWeight: 800, color: '#0f172a' }}>
+              링커엑스 프로그램 설치 중
+            </h3>
+            
+            <p style={{ margin: '0 0 24px 0', fontSize: '0.88rem', color: '#64748b', fontWeight: 500 }}>
+              데스크톱/모바일 단독 애플리케이션으로 구성하고 있습니다.
+            </p>
+
+            {/* Progress Bar Container */}
+            <div style={{ width: '100%', height: '10px', backgroundColor: '#e2e8f0', borderRadius: '9999px', overflow: 'hidden', marginBottom: '12px', position: 'relative' }}>
+              <div style={{
+                width: `${installProgress}%`, height: '100%',
+                backgroundImage: 'linear-gradient(90deg, #10b981 0%, #059669 100%)',
+                borderRadius: '9999px', transition: 'width 0.2s ease-out'
+              }} />
+            </div>
+
+            {/* Progress Percentage and Status Text */}
+            <div style={{ display: 'flex', justifyContent: 'space-between', width: '100%', fontSize: '0.78rem', fontWeight: 700, color: '#475569', marginBottom: '8px' }}>
+              <span>{installStatusText}</span>
+              <span style={{ color: '#059669' }}>{installProgress}%</span>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* 설치 완료 팝업 모달 */}
+      {showInstallSuccess && (
+        <div style={{
+          position: 'fixed', top: 0, left: 0, width: '100vw', height: '100vh',
+          backgroundColor: 'rgba(15, 23, 42, 0.75)', backdropFilter: 'blur(8px)',
+          display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 999999
+        }}>
+          <div style={{
+            width: '400px', backgroundColor: '#ffffff', borderRadius: '16px',
+            padding: '32px 24px', boxShadow: '0 25px 50px -12px rgba(0, 0, 0, 0.25)',
+            border: '1px solid rgba(226, 232, 240, 0.8)', textAlign: 'center',
+            display: 'flex', flexDirection: 'column', alignItems: 'center',
+            animation: 'modalScaleIn 0.3s cubic-bezier(0.34, 1.56, 0.64, 1)'
+          }}>
+            {/* Success Check Icon */}
+            <div style={{
+              width: '64px', height: '64px', borderRadius: '50%',
+              backgroundColor: '#ecfdf5', display: 'flex', alignItems: 'center',
+              justifyContent: 'center', marginBottom: '20px', color: '#10b981'
+            }}>
+              <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round">
+                <polyline points="20 6 9 17 4 12" />
+              </svg>
+            </div>
+
+            <h3 style={{ margin: '0 0 12px 0', fontSize: '1.2rem', fontWeight: 800, color: '#0f172a' }}>
+              설치 완료
+            </h3>
+
+            <p style={{ margin: '0 0 24px 0', fontSize: '0.88rem', color: '#475569', fontWeight: 500, lineHeight: 1.6 }}>
+              링커엑스 설치가 성공적으로 완료되었습니다!<br />
+              바탕화면의 아이콘을 확인하세요.
+            </p>
+
+            <button
+              onClick={() => setShowInstallSuccess(false)}
+              style={{
+                width: '100%', padding: '12px', backgroundColor: '#10b981',
+                color: '#ffffff', border: 'none', borderRadius: '8px',
+                fontWeight: 700, fontSize: '0.9rem', cursor: 'pointer',
+                transition: 'all 0.2s', boxShadow: '0 4px 12px rgba(16,185,129,0.2)'
+              }}
+            >
+              확인
+            </button>
+          </div>
+        </div>
+      )}
+
+      <style>{`
+        @keyframes spin {
+          from { transform: rotate(0deg); }
+          to { transform: rotate(360deg); }
+        }
+        @keyframes modalScaleIn {
+          from { transform: scale(0.95); opacity: 0; }
+          to { transform: scale(1); opacity: 1; }
+        }
+      `}</style>
 
     </nav>
   );
