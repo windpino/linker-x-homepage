@@ -11,6 +11,7 @@ const Navbar = ({ onOpenInquiry, onNavigateToSupport, onNavigateToHome, user, su
   const [installProgress, setInstallProgress] = useState(0);
   const [installStatusText, setInstallStatusText] = useState('');
   const [showInstallSuccess, setShowInstallSuccess] = useState(false);
+  const [showManualGuide, setShowManualGuide] = useState(false);
 
   // Capture PWA installation prompt event
   useEffect(() => {
@@ -73,11 +74,15 @@ const Navbar = ({ onOpenInquiry, onNavigateToSupport, onNavigateToHome, user, su
     }, 250);
   };
 
-  // Trigger PWA installation
-  const handleInstallApp = async () => {
-    // 1) React state or 2) global window cache
-    const promptEvent = deferredPrompt || window.deferredPrompt;
+  // Open welcome marketing install modal first
+  const handleInstallApp = () => {
+    setShowInstallGuide(true);
+    setIsOpen(false); // Close mobile drawer
+  };
 
+  // Perform actual PWA installation triggered from the welcome modal button
+  const executePWAInstall = async () => {
+    const promptEvent = deferredPrompt || window.deferredPrompt;
     if (promptEvent) {
       promptEvent.prompt();
       const { outcome } = await promptEvent.userChoice;
@@ -88,10 +93,9 @@ const Navbar = ({ onOpenInquiry, onNavigateToSupport, onNavigateToHome, user, su
         startInstallAnimation();
       }
     } else {
-      // Fallback: Show visual popup guide for browsers that don't support programmatic prompting (e.g. Safari, iOS)
-      setShowInstallGuide(true);
+      // In case browser prompt is not supported, run simulation to guide manual bookmarking
+      startInstallAnimation();
     }
-    setIsOpen(false); // Close mobile drawer
   };
 
   const navBgClass = user ? "bg-slate-950/80 border-slate-900 text-white backdrop-blur-md" : "bg-white border-slate-200 text-slate-650 shadow-sm";
@@ -252,7 +256,7 @@ const Navbar = ({ onOpenInquiry, onNavigateToSupport, onNavigateToHome, user, su
         </div>
       )}
 
-      {/* Modern PWA Install Guide Modal (iOS/Safari Fallbacks) */}
+      {/* Modern PWA Install Welcome & Advertising Modal */}
       {showInstallGuide && (
         <div 
           className="fixed inset-0 z-50 flex items-center justify-center p-4 animate-fade-in"
@@ -271,59 +275,96 @@ const Navbar = ({ onOpenInquiry, onNavigateToSupport, onNavigateToHome, user, su
             </button>
 
             <div className="text-center mt-3">
-              <div className="w-14 h-14 bg-emerald-50 border border-emerald-100 rounded-2xl flex items-center justify-center text-emerald-600 mx-auto mb-5">
-                <Monitor size={28} />
+              {/* App Icon Container */}
+              <div className="w-16 h-16 bg-emerald-50 border border-emerald-100 rounded-3xl flex items-center justify-center mx-auto mb-5 shadow-sm">
+                <img src="/logo192.png" alt="Linker X App Icon" className="w-11 h-11 object-contain" />
               </div>
-              <h3 className="text-lg font-black text-slate-950">링커엑스 바탕화면 앱 설치 가이드</h3>
-              <p className="text-xs text-slate-500 font-bold mt-1.5">
-                클라우드 앱 서비스로 바탕화면에 바로 가기 앱을 생성합니다.
+              <span className="inline-block bg-emerald-50 text-emerald-700 text-[10px] font-black px-2.5 py-1 rounded-full mb-2">웰컴 설치 혜택</span>
+              <h3 className="text-xl font-black text-slate-950 tracking-tight leading-tight">링커엑스 바탕화면 앱 설치</h3>
+              <p className="text-xs text-slate-500 font-bold mt-2 leading-relaxed">
+                클라우드 앱 서비스로 바탕화면에 전용 실행 아이콘을 생성하며, 매번 브라우저를 켤 필요 없이 다이렉트로 원클릭 로그인됩니다.
               </p>
             </div>
 
-            {/* Instruction Steps */}
-            <div className="my-8 space-y-4">
-              <div className="flex gap-3 bg-slate-50/70 p-4 rounded-2xl border border-slate-100">
-                <span className="w-5 h-5 rounded-full bg-emerald-50 border border-emerald-200 text-emerald-600 flex items-center justify-center text-xs font-black shrink-0 mt-0.5">1</span>
+            {/* Core Features Marketing Section */}
+            <div className="my-6 space-y-3">
+              <div className="p-3.5 bg-slate-50/70 border border-slate-100 rounded-2xl flex items-start gap-3">
+                <div className="w-6 h-6 bg-emerald-100/60 text-emerald-600 rounded-lg flex items-center justify-center shrink-0 text-xs font-black">1</div>
                 <div>
-                  <p className="text-xs text-slate-950 font-black">PC (크롬 / 웨일 / 엣지 브라우저)</p>
-                  <p className="text-[11px] text-slate-500 font-bold mt-1 leading-relaxed">
-                    주소창 오른쪽 끝에 있는 <span className="text-emerald-600 font-black">[모니터 설치 모양]</span> 아이콘을 클릭하거나, 브라우저 메뉴에서 <span className="text-emerald-600 font-black">[설치]</span>를 누르시면 바탕화면에 연두색 링커엑스 앱이 즉시 생성됩니다.
-                  </p>
+                  <h4 className="text-xs font-black text-slate-950">완벽한 유통·물류 통합 관리</h4>
+                  <p className="text-[10px] text-slate-500 font-bold mt-0.5 leading-relaxed">판매, 실시간 재고 추적, 현장영업 및 대리점 수발주가 하나로 자동 연동됩니다.</p>
                 </div>
               </div>
 
-              <div className="flex gap-3 bg-slate-50/70 p-4 rounded-2xl border border-slate-100">
-                <span className="w-5 h-5 rounded-full bg-emerald-50 border border-emerald-200 text-emerald-600 flex items-center justify-center text-xs font-black shrink-0 mt-0.5">2</span>
+              <div className="p-3.5 bg-slate-50/70 border border-slate-100 rounded-2xl flex items-start gap-3">
+                <div className="w-6 h-6 bg-emerald-100/60 text-emerald-600 rounded-lg flex items-center justify-center shrink-0 text-xs font-black">2</div>
                 <div>
-                  <p className="text-xs text-slate-950 font-black">아이폰 / iPad (Safari 브라우저)</p>
-                  <p className="text-[11px] text-slate-500 font-bold mt-1 leading-relaxed">
-                    Safari 브라우저 하단의 <span className="text-emerald-600 font-black">[공유하기 버튼 (네모 위 화살표)]</span>을 누르고 목록을 내려 <span className="text-emerald-600 font-black">[홈 화면에 추가]</span>를 터치해 주세요.
-                  </p>
+                  <h4 className="text-xs font-black text-slate-950">인건비 & 고정비 즉시 절감</h4>
+                  <p className="text-[10px] text-slate-500 font-bold mt-0.5 leading-relaxed">직원 1인 이상의 분량을 클릭 몇 번으로 스마트하게 처리해 복잡한 유통 업무를 최적화합니다.</p>
                 </div>
               </div>
 
-              <div className="flex gap-3 bg-slate-50/70 p-4 rounded-2xl border border-slate-100">
-                <span className="w-5 h-5 rounded-full bg-emerald-50 border border-emerald-200 text-emerald-600 flex items-center justify-center text-xs font-black shrink-0 mt-0.5">3</span>
+              <div className="p-3.5 bg-slate-50/70 border border-slate-100 rounded-2xl flex items-start gap-3">
+                <div className="w-6 h-6 bg-emerald-100/60 text-emerald-600 rounded-lg flex items-center justify-center shrink-0 text-xs font-black">3</div>
                 <div>
-                  <p className="text-xs text-slate-950 font-black">안드로이드 (삼성 인터넷 / 크롬)</p>
-                  <p className="text-[11px] text-slate-500 font-bold mt-1 leading-relaxed">
-                    브라우저 하단 삼선 메뉴 또는 더보기 목록에서 <span className="text-emerald-600 font-black">[앱 추가] ➔ [홈 화면]</span>을 선택해 주시면 홈 화면에 전용 앱 아이콘이 바로 생성됩니다.
-                  </p>
+                  <h4 className="text-xs font-black text-slate-950">실시간 다바이스 동기화</h4>
+                  <p className="text-[10px] text-slate-500 font-bold mt-0.5 leading-relaxed">PC 프로그램은 물론, 현장용 스마트폰 앱 및 PDA, 바코드 스캐너와 실시간 동기화됩니다.</p>
                 </div>
               </div>
             </div>
 
-            {/* Quick Actions */}
-            <div className="border-t border-slate-100 pt-5 flex flex-col gap-2 text-center">
+            {/* Quick Actions (Primary Run Button) */}
+            <div className="border-t border-slate-100 pt-5 flex flex-col gap-2.5 text-center">
               <button
-                onClick={startInstallAnimation}
-                className="w-full bg-emerald-600 hover:bg-emerald-700 text-white font-extrabold text-xs py-3.5 rounded-xl transition-all"
+                onClick={() => {
+                  setShowInstallGuide(false);
+                  executePWAInstall();
+                }}
+                className="w-full bg-emerald-600 hover:bg-emerald-700 text-white font-extrabold text-xs py-4 rounded-xl transition-all shadow-md shadow-emerald-600/10 hover:shadow-emerald-600/20 flex items-center justify-center gap-1.5"
               >
-                자동 설치 마법사 실행하기
+                <Download size={14} />
+                링커엑스 1초 자동 설치 시작하기
               </button>
+
+              {/* Accordion Toggle for manual guide */}
+              <button
+                type="button"
+                onClick={() => setShowManualGuide(!showManualGuide)}
+                className="text-[11px] text-slate-500 hover:text-slate-800 font-bold flex items-center justify-center gap-1 py-1"
+              >
+                <span>자동 설치가 안 될 경우 (기기별 설치 안내)</span>
+                <span className="text-[9px] transition-transform duration-200" style={{ transform: showManualGuide ? 'rotate(180deg)' : 'rotate(0deg)' }}>
+                  ▼
+                </span>
+              </button>
+
+              {/* Manual guides content showing under accordion */}
+              {showManualGuide && (
+                <div className="mt-2 space-y-3.5 text-left border-t border-slate-100 pt-3.5 animate-in fade-in duration-200">
+                  <div className="flex gap-2">
+                    <span className="text-[10px] font-black text-emerald-600 shrink-0">PC:</span>
+                    <p className="text-[10.5px] text-slate-500 font-bold leading-normal">
+                      주소창 오른쪽 끝의 <span className="text-slate-900 font-black">[모니터 설치 모양]</span> 아이콘을 클릭하거나 브라우저 설정 메뉴에서 <span className="text-slate-900 font-black">[앱 설치]</span>를 선택하면 연두색 X 아이콘이 바탕화면에 생성됩니다.
+                    </p>
+                  </div>
+                  <div className="flex gap-2">
+                    <span className="text-[10px] font-black text-emerald-600 shrink-0">아이폰:</span>
+                    <p className="text-[10.5px] text-slate-500 font-bold leading-normal">
+                      Safari 브라우저 하단의 <span className="text-slate-900 font-black">[공유하기 버튼 (네모 위 화살표)]</span>을 클릭하고 메뉴 아래로 내려 <span className="text-slate-900 font-black">[홈 화면에 추가]</span>를 눌러주세요.
+                    </p>
+                  </div>
+                  <div className="flex gap-2">
+                    <span className="text-[10px] font-black text-emerald-600 shrink-0">안드로이드:</span>
+                    <p className="text-[10.5px] text-slate-500 font-bold leading-normal">
+                      삼성인터넷/크롬 브라우저 우측 하단 삼선 메뉴에서 <span className="text-emerald-600 font-black">[앱 추가] ➔ [홈 화면]</span>을 차례로 탭해 줍니다.
+                    </p>
+                  </div>
+                </div>
+              )}
+
               <button
                 onClick={() => setShowInstallGuide(false)}
-                className="w-full bg-slate-100 hover:bg-slate-200 text-slate-700 font-extrabold text-xs py-3.5 rounded-xl transition-all"
+                className="w-full bg-slate-50 hover:bg-slate-100 text-slate-500 font-extrabold text-xs py-3.5 rounded-xl transition-all"
               >
                 닫기
               </button>
