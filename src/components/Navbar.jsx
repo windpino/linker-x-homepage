@@ -12,6 +12,7 @@ const Navbar = ({ onOpenInquiry, onNavigateToSupport, onNavigateToHome, user, su
   const [installStatusText, setInstallStatusText] = useState('');
   const [showInstallSuccess, setShowInstallSuccess] = useState(false);
   const [showManualGuide, setShowManualGuide] = useState(false);
+  const [installAlertMsg, setInstallAlertMsg] = useState('');
 
   // Capture PWA installation prompt event
   useEffect(() => {
@@ -82,8 +83,16 @@ const Navbar = ({ onOpenInquiry, onNavigateToSupport, onNavigateToHome, user, su
 
   // Perform actual PWA installation triggered from the welcome modal button
   const executePWAInstall = async () => {
+    // 0) Check if already running inside standalone app
+    const isStandalone = window.matchMedia('(display-mode: standalone)').matches || window.navigator.standalone;
+    if (isStandalone) {
+      setInstallAlertMsg('이미 링커엑스 바탕화면 앱이 설치되어 실행 중입니다! 바탕화면의 아이콘을 이용해 주세요.');
+      return;
+    }
+
     const promptEvent = deferredPrompt || window.deferredPrompt;
     if (promptEvent) {
+      setInstallAlertMsg(''); // Clear alerts
       promptEvent.prompt();
       const { outcome } = await promptEvent.userChoice;
       if (outcome === 'accepted') {
@@ -93,8 +102,9 @@ const Navbar = ({ onOpenInquiry, onNavigateToSupport, onNavigateToHome, user, su
         startInstallAnimation();
       }
     } else {
-      // In case browser prompt is not supported, run simulation to guide manual bookmarking
-      startInstallAnimation();
+      // PWA prompt not loaded or not supported by current browser (e.g. Chrome not fully loaded sw.js yet, or iOS Safari)
+      setInstallAlertMsg('현재 브라우저가 자동 설치를 지원하지 않거나 준비 중입니다. 3초 대기 후 새로고침(F5) 해보시거나, 아래 [기기별 설치 안내]를 눌러 바로가기를 생성해 주세요!');
+      setShowManualGuide(true); // Automatically open manual guide accordion to assist the user
     }
   };
 
@@ -285,6 +295,14 @@ const Navbar = ({ onOpenInquiry, onNavigateToSupport, onNavigateToHome, user, su
                 클라우드 앱 서비스로 바탕화면에 전용 실행 아이콘을 생성하며, 매번 브라우저를 켤 필요 없이 다이렉트로 원클릭 로그인됩니다.
               </p>
             </div>
+
+            {/* Install Alert Message */}
+            {installAlertMsg && (
+              <div className="mt-2 mb-4 bg-amber-50 border border-amber-250/60 rounded-2xl p-4 text-left flex items-start gap-2.5">
+                <AlertCircle size={16} className="text-amber-600 shrink-0 mt-0.5" />
+                <span className="text-[11px] font-bold text-amber-800 leading-normal">{installAlertMsg}</span>
+              </div>
+            )}
 
             {/* Core Features Marketing Section */}
             <div className="my-6 space-y-3">
