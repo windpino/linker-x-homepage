@@ -1,21 +1,38 @@
 {
+  "id": "/?source=pwa",
   "short_name": "Linker X",
-  "name": "Linker X - 물류관리 시스템",
+  "name": "Linker X - 물류·유통 통합 ERP 솔루션",
+  "description": "판매·재고·현장영업·수발주·도매몰 통합관리 ERP 솔루션 링커엑스",
   "icons": [
     {
       "src": "/logo192.png",
       "type": "image/png",
-      "sizes": "192x192"
+      "sizes": "192x192",
+      "purpose": "any"
+    },
+    {
+      "src": "/logo192.png",
+      "type": "image/png",
+      "sizes": "192x192",
+      "purpose": "maskable"
     },
     {
       "src": "/logo512.png",
       "type": "image/png",
-      "sizes": "512x512"
+      "sizes": "512x512",
+      "purpose": "any"
+    },
+    {
+      "src": "/logo512.png",
+      "type": "image/png",
+      "sizes": "512x512",
+      "purpose": "maskable"
     }
   ],
-  "start_url": "/",
-  "background_color": "#020617",
-  "theme_color": "#3b82f6",
+  "start_url": "/?source=pwa",
+  "scope": "/",
+  "background_color": "#ffffff",
+  "theme_color": "#059669",
   "display": "standalone",
-  "orientation": "portrait"
+  "orientation": "any"
 }

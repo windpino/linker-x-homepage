@@ -452,14 +452,30 @@ const Navbar = ({ onOpenInquiry, onNavigateToSupport, onNavigateToHome, user, su
               </svg>
             </div>
 
-            <h3 style={{ margin: '0 0 12px 0', fontSize: '1.2rem', fontWeight: 800, color: '#0f172a' }}>
-              설치 완료
+            <h3 style={{ margin: '0 0 8px 0', fontSize: '1.2rem', fontWeight: 800, color: '#0f172a' }}>
+              링커엑스 프로그램 설치 완료
             </h3>
 
-            <p style={{ margin: '0 0 24px 0', fontSize: '0.88rem', color: '#475569', fontWeight: 500, lineHeight: 1.6 }}>
-              링커엑스 설치가 성공적으로 완료되었습니다!<br />
-              바탕화면의 아이콘을 확인하세요.
+            <p style={{ margin: '0 0 16px 0', fontSize: '0.85rem', color: '#475569', fontWeight: 600, lineHeight: 1.5 }}>
+              바탕화면의 연두색 링커엑스 실행 아이콘을 확인해 주세요!
             </p>
+
+            <div style={{
+              backgroundColor: '#f8fafc',
+              border: '1px solid #e2e8f0',
+              borderRadius: '12px',
+              padding: '12px 14px',
+              textAlign: 'left',
+              fontSize: '0.78rem',
+              color: '#64748b',
+              lineHeight: 1.6,
+              fontWeight: 500,
+              marginBottom: '24px',
+              width: '100%'
+            }}>
+              <span style={{ fontWeight: 800, color: '#0f172a', display: 'block', marginBottom: '4px' }}>💡 바탕화면에 아이콘이 생성되지 않았나요?</span>
+              설치된 링커엑스 창 우측 상단의 <span style={{ fontWeight: 700, color: '#0f172a' }}>[메뉴(점 3개)] ➔ [저장 및 공유] ➔ [바로가기 만들기]</span> 또는 <span style={{ fontWeight: 700, color: '#0f172a' }}>[도구 더보기 ➔ 바로가기 만들기]</span>를 누르시면 바탕화면에 링커엑스 로고 아이콘이 즉시 생성됩니다!
+            </div>
 
             <button
               onClick={() => setShowInstallSuccess(false)}
