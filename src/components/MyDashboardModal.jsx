@@ -242,8 +242,12 @@ const MyDashboardModal = ({ onClose, user }) => {
                         <span className="font-mono text-blue-600 bg-blue-50/50 px-2.5 py-1 rounded-lg">LX-TRIAL-{user.uid.slice(0, 8).toUpperCase()}</span>
                       </div>
                       <div className="bg-slate-50 border border-slate-100 rounded-xl p-3.5 flex items-center justify-between text-xs font-bold text-slate-650 mt-2">
-                        <span>계약 코드</span>
-                        <span className="font-mono text-slate-600">CT-{user.uid.slice(8, 16).toUpperCase()}</span>
+                        <span>연동 회사 ID 코드</span>
+                        <span className="font-mono text-blue-600 bg-blue-50/50 px-2.5 py-1 rounded-lg">{userData?.companyId || '-'}</span>
+                      </div>
+                      <div className="bg-slate-50 border border-slate-100 rounded-xl p-3.5 flex items-center justify-between text-xs font-bold text-slate-650 mt-2">
+                        <span>상호 (회사명)</span>
+                        <span className="text-slate-900">{userData?.companyName || '-'}</span>
                       </div>
                     </div>
 

@@ -24,6 +24,8 @@ const AuthModal = ({ onClose, initialTab = 'signup' }) => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [referredByInput, setReferredByInput] = useState('');
+  const [companyIdInput, setCompanyIdInput] = useState('');
+  const [companyNameInput, setCompanyNameInput] = useState('');
   const [errorMsg, setErrorMsg] = useState('');
   const [infoMsg, setInfoMsg] = useState('');
   const [isLoading, setIsLoading] = useState(false);
@@ -37,8 +39,8 @@ const AuthModal = ({ onClose, initialTab = 'signup' }) => {
     }
   }, []);
 
-  // Safe user doc creation helper for social logins
-  const createOrGetUserDoc = async (user, referredByCode = '') => {
+  // Safe user doc creation helper for social logins and custom register
+  const createOrGetUserDoc = async (user, referredByCode = '', companyId = '', companyName = '') => {
     const userDocRef = doc(db, 'users', user.uid);
     const userDocSnap = await getDoc(userDocRef);
 
@@ -73,7 +75,51 @@ const AuthModal = ({ onClose, initialTab = 'signup' }) => {
         }
       }
 
-      // Create new user document
+      // Linker X Sync: Setup company schema
+      let cleanCompanyId = companyId.trim().toLowerCase();
+      let cleanCompanyName = companyName.trim();
+
+      if (!cleanCompanyId) {
+        // Fallback for social google logins
+        const emailPrefix = user.email.split('@')[0].replace(/[^a-zA-Z0-9]/g, '');
+        cleanCompanyId = emailPrefix || `lx${Date.now().toString().slice(-6)}`;
+        cleanCompanyName = `${emailPrefix || '신규회원'} 링커엑스`;
+      }
+
+      // 1. Create client company info for Linker X ERP compat
+      const compDocRef = doc(db, 'companies', cleanCompanyId);
+      const compDocSnap = await getDoc(compDocRef);
+      
+      if (!compDocSnap.exists()) {
+        await setDoc(compDocRef, {
+          id: cleanCompanyId,
+          name: cleanCompanyName,
+          email: user.email,
+          password: password || 'social-auth', // default password key
+          status: 'pending_setup',
+          expiryDate: trialEnd.toISOString(), // sync 30 days trial
+          isLockedOnExpiry: true,
+          createdAt: now.toISOString()
+        });
+
+        // 2. Create partner master user sub-doc for partner role logs
+        const partnerId = Date.now();
+        const compositeId = String(partnerId);
+        const newPartner = {
+          id: partnerId,
+          loginId: user.email,
+          password: password || 'social-auth',
+          name: cleanCompanyName,
+          email: user.email,
+          companyId: cleanCompanyId,
+          type: '매출처',
+          status: 'pending',
+          createdAt: now.toISOString()
+        };
+        await setDoc(doc(db, 'companies', cleanCompanyId, 'partners', compositeId), newPartner);
+      }
+
+      // Create new user document in homepage 'users' collection
       await setDoc(userDocRef, {
         email: user.email,
         createdAt: now.toISOString(),
@@ -81,7 +127,9 @@ const AuthModal = ({ onClose, initialTab = 'signup' }) => {
         referralCode: newReferralCode,
         referredBy: referredByClean || null,
         discountRate: 0,
-        referralCount: 0
+        referralCount: 0,
+        companyId: cleanCompanyId,
+        companyName: cleanCompanyName
       });
 
       // Update inviter's referral rewards if valid
@@ -145,12 +193,30 @@ const AuthModal = ({ onClose, initialTab = 'signup' }) => {
     setIsLoading(true);
     try {
       if (activeTab === 'signup') {
+        // 0. Company details validation
+        if (!companyIdInput.trim()) {
+          setErrorMsg('원하는 회사 ID 코드를 입력해 주세요.');
+          setIsLoading(false);
+          return;
+        }
+        if (!companyNameInput.trim()) {
+          setErrorMsg('상호(회사명)를 입력해 주세요.');
+          setIsLoading(false);
+          return;
+        }
+        // Alpha-numeric filter for login compatibility in Linker X App
+        if (!/^[a-zA-Z0-9_-]+$/.test(companyIdInput.trim())) {
+          setErrorMsg('회사 ID 코드는 영문, 숫자, 하이픈(-) 및 언더바(_)만 사용 가능합니다.');
+          setIsLoading(false);
+          return;
+        }
+
         // Firebase Auth User Creation
         const userCredential = await createUserWithEmailAndPassword(auth, email, password);
         const user = userCredential.user;
 
-        // Create user profile in Firestore
-        await createOrGetUserDoc(user, referredByInput);
+        // Create user profile and sync with companies database in Firestore
+        await createOrGetUserDoc(user, referredByInput, companyIdInput, companyNameInput);
 
         // Send Email Verification Link
         try {
@@ -328,6 +394,40 @@ const AuthModal = ({ onClose, initialTab = 'signup' }) => {
                 <div className="bg-emerald-50 border border-emerald-100 text-emerald-700 rounded-2xl p-3.5 text-[11px] font-bold leading-relaxed flex gap-2">
                   <AlertCircle size={15} className="shrink-0 mt-0.5 text-emerald-600" />
                   <span>{infoMsg}</span>
+                </div>
+              )}
+
+              {/* Company Code & Name inputs (Signup Only) */}
+              {activeTab === 'signup' && (
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                  <div>
+                    <label className="block text-[10px] font-extrabold text-slate-500 uppercase tracking-wider mb-2">원하는 회사 ID 코드</label>
+                    <div className="relative group">
+                      <Lock className="absolute left-3.5 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-400 group-focus-within:text-blue-600 transition-colors" />
+                      <input
+                        type="text"
+                        value={companyIdInput}
+                        onChange={e => setCompanyIdInput(e.target.value)}
+                        placeholder="영문/숫자 예: excorp"
+                        className="w-full bg-slate-50 border border-slate-200/80 focus:border-blue-600 focus:bg-white rounded-2xl py-3.5 pl-12 pr-4 text-slate-900 text-[13px] font-bold outline-none transition-all focus:ring-4 focus:ring-blue-600/5 placeholder:text-slate-400 placeholder:font-normal"
+                        required
+                      />
+                    </div>
+                  </div>
+                  <div>
+                    <label className="block text-[10px] font-extrabold text-slate-500 uppercase tracking-wider mb-2">회사명 (상호)</label>
+                    <div className="relative group">
+                      <Sparkles className="absolute left-3.5 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-400 group-focus-within:text-blue-600 transition-colors" />
+                      <input
+                        type="text"
+                        value={companyNameInput}
+                        onChange={e => setCompanyNameInput(e.target.value)}
+                        placeholder="상호명 입력"
+                        className="w-full bg-slate-50 border border-slate-200/80 focus:border-blue-600 focus:bg-white rounded-2xl py-3.5 pl-12 pr-4 text-slate-900 text-[13px] font-bold outline-none transition-all focus:ring-4 focus:ring-blue-600/5 placeholder:text-slate-400 placeholder:font-normal"
+                        required
+                      />
+                    </div>
+                  </div>
                 </div>
               )}
 
