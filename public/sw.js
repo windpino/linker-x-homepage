@@ -1,16 +1,14 @@
-const CACHE_NAME = 'linker-x-cache-v1';
+const CACHE_NAME = 'linker-x-cache-v2';
 const ASSETS_TO_CACHE = [
   '/',
   '/index.html',
   '/manifest.json',
-  '/logo192.png',
-  '/logo512.png'
+  '/images/logo_icon.png'
 ];
 
 self.addEventListener('install', (event) => {
   event.waitUntil(
     caches.open(CACHE_NAME).then((cache) => {
-      // Try to cache assets, ignore errors on dynamic/re-routed resources during build phase
       return cache.addAll(ASSETS_TO_CACHE).catch(err => console.log('Caching initial assets skipped:', err));
     }).then(() => self.skipWaiting())
   );
@@ -31,19 +29,29 @@ self.addEventListener('activate', (event) => {
 });
 
 self.addEventListener('fetch', (event) => {
-  // Offline-first asset fallback resolution
+  // Network-First strategy to ensure updates are instantly delivered to PWA instances
   event.respondWith(
-    caches.match(event.request).then((cachedResponse) => {
-      if (cachedResponse) {
-        return cachedResponse;
-      }
-      return fetch(event.request).catch((err) => {
-        // Fallback resolution for document routing on reload
-        if (event.request.mode === 'navigate') {
-          return caches.match('/');
+    fetch(event.request)
+      .then((response) => {
+        // Cache valid resources on the fly
+        if (response && response.status === 200 && response.type === 'basic') {
+          const responseToCache = response.clone();
+          caches.open(CACHE_NAME).then((cache) => {
+            cache.put(event.request, responseToCache);
+          });
         }
-        return Promise.reject(err);
-      });
-    })
+        return response;
+      })
+      .catch(() => {
+        // Fallback to cache if network is offline
+        return caches.match(event.request).then((cachedResponse) => {
+          if (cachedResponse) {
+            return cachedResponse;
+          }
+          if (event.request.mode === 'navigate') {
+            return caches.match('/');
+          }
+        });
+      })
   );
 });

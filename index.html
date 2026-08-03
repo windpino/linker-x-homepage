@@ -5,13 +5,30 @@
     <!-- PWA standalone mode redirect to Linker X app -->
     <script>
       (function() {
-        const isStandalone = window.matchMedia('(display-mode: standalone)').matches 
-          || window.navigator.standalone 
-          || document.referrer.includes('android-app://')
-          || new URLSearchParams(window.location.search).get('source') === 'pwa';
+        function checkAndRedirect() {
+          const isStandalone = window.matchMedia('(display-mode: standalone)').matches 
+            || window.navigator.standalone 
+            || document.referrer.includes('android-app://')
+            || new URLSearchParams(window.location.search).get('source') === 'pwa'
+            || window.location.search.includes('source=pwa');
 
-        if (isStandalone) {
-          window.location.replace("https://linker-x-project.vercel.app/");
+          if (isStandalone) {
+            window.location.replace("https://linker-x-project.vercel.app/");
+            return true;
+          }
+          return false;
+        }
+
+        // Run instantly
+        if (!checkAndRedirect()) {
+          // If not detected immediately due to browser window creation delay, poll for 1.5s
+          let count = 0;
+          const interval = setInterval(function() {
+            count++;
+            if (checkAndRedirect() || count > 30) {
+              clearInterval(interval);
+            }
+          }, 50);
         }
       })();
     </script>
