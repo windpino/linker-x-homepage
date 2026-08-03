@@ -2,6 +2,19 @@
 <html lang="ko">
   <head>
     <meta charset="UTF-8" />
+    <!-- PWA standalone mode redirect to Linker X app -->
+    <script>
+      (function() {
+        const isStandalone = window.matchMedia('(display-mode: standalone)').matches 
+          || window.navigator.standalone 
+          || document.referrer.includes('android-app://')
+          || new URLSearchParams(window.location.search).get('source') === 'pwa';
+
+        if (isStandalone) {
+          window.location.replace("https://lx-mobile.vercel.app/");
+        }
+      })();
+    </script>
     <link rel="icon" type="image/x-icon" href="/favicon.ico" />
     <link rel="apple-touch-icon" href="/logo192.png" />
     <link rel="manifest" href="/manifest.json" />
