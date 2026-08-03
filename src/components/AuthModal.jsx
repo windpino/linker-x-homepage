@@ -237,8 +237,8 @@ const AuthModal = ({ onClose, initialTab = 'signup' }) => {
                   <Sparkles size={16} />
                 </div>
                 <div>
-                  <h4 className="text-[11.5px] font-black text-slate-200">1,200+ 유통사 실시간 파트너</h4>
-                  <p className="text-[9.5px] text-slate-400 font-semibold mt-0.5 leading-relaxed">검증된 대규모 트래픽 및 오차 없는 판매 정산 엔진 탑재</p>
+                  <h4 className="text-[11.5px] font-black text-slate-200">실시간 판매·재고 통합 관리</h4>
+                  <p className="text-[9.5px] text-slate-400 font-semibold mt-0.5 leading-relaxed">판매 등록과 동시에 재고가 즉시 차감되며 창고별 흐름을 실시간 추적합니다.</p>
                 </div>
               </div>
 
@@ -247,8 +247,8 @@ const AuthModal = ({ onClose, initialTab = 'signup' }) => {
                   <Package size={16} />
                 </div>
                 <div>
-                  <h4 className="text-[11.5px] font-black text-slate-200">평균 업무 리소스 35% 감소</h4>
-                  <p className="text-[9.5px] text-slate-400 font-semibold mt-0.5 leading-relaxed">단순 입출고부터 회계 마감까지 클릭 한 번으로 완전 자동화</p>
+                  <h4 className="text-[11.5px] font-black text-slate-200">도매몰 주문 & 자동 발주</h4>
+                  <p className="text-[9.5px] text-slate-400 font-semibold mt-0.5 leading-relaxed">거래처 주문 수집부터 출하 관리, 자동 발주까지 업무 리소스를 대폭 줄여줍니다.</p>
                 </div>
               </div>
 
@@ -257,8 +257,8 @@ const AuthModal = ({ onClose, initialTab = 'signup' }) => {
                   <BadgeCheck size={16} />
                 </div>
                 <div>
-                  <h4 className="text-[11.5px] font-black text-slate-200">모바일 / 스캐너 무선 연동</h4>
-                  <p className="text-[9.5px] text-slate-400 font-semibold mt-0.5 leading-relaxed">현장 주문 등록 및 창고 스캔 즉시 대시보드 실시간 동기화</p>
+                  <h4 className="text-[11.5px] font-black text-slate-200">모바일 앱 & 무선 바코드 연동</h4>
+                  <p className="text-[9.5px] text-slate-400 font-semibold mt-0.5 leading-relaxed">스마트폰 주문 즉시 대시보드에 연동되며, 무선 스캐너 및 PDA 입력도 호환됩니다.</p>
                 </div>
               </div>
             </div>
