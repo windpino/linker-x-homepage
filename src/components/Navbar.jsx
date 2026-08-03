@@ -95,7 +95,7 @@ const Navbar = ({ onOpenInquiry, onNavigateToSupport, onNavigateToHome, user, su
     // 0) Check if already running inside standalone app
     const isStandalone = window.matchMedia('(display-mode: standalone)').matches || window.navigator.standalone;
     if (isStandalone) {
-      setInstallAlertMsg('이미 링커엑스 바탕화면 앱이 설치되어 실행 중입니다! 바탕화면의 아이콘을 이용해 주세요.');
+      alert('이미 링커엑스 바탕화면 앱이 설치되어 실행 중입니다!');
       return;
     }
 
@@ -109,11 +109,11 @@ const Navbar = ({ onOpenInquiry, onNavigateToSupport, onNavigateToHome, user, su
         setDeferredPrompt(null);
         window.deferredPrompt = null;
         startInstallAnimation();
+      } else {
+        startInstallAnimation();
       }
     } else {
-      // PWA prompt not loaded or not supported by current browser (e.g. Chrome not fully loaded sw.js yet, or iOS Safari)
-      setInstallAlertMsg('💡 [주소창에서 직접 설치하기] 브라우저 자동 팝업이 대기 중입니다. 브라우저 주소창 맨 오른쪽 끝에 있는 [모니터 모양(🖥️+⬇️)] 또는 [앱 설치] 아이콘을 누르시면 바탕화면에 링커엑스가 즉시 설치됩니다!');
-      setShowManualGuide(true); // Automatically open manual guide accordion to assist the user
+      startInstallAnimation();
     }
   };
 
@@ -301,6 +301,16 @@ const Navbar = ({ onOpenInquiry, onNavigateToSupport, onNavigateToHome, user, su
               </p>
             </div>
 
+            {/* Simple escort note when automatic prompt is blocked by browser */}
+            {!isPromptAvailable && (
+              <div className="mt-4 bg-blue-50/60 border border-blue-100/50 rounded-2xl p-3.5 text-left flex items-start gap-2">
+                <span className="text-[10px] bg-blue-600 text-white font-extrabold px-1.5 py-0.5 rounded shrink-0">안내</span>
+                <p className="text-[10.5px] text-blue-850 font-bold leading-normal">
+                  자동 팝업이 대기 중입니다. 브라우저 주소창 오른쪽 끝의 <span className="text-blue-950 font-black">[모니터 설치 모양(🖥️+⬇️)]</span> 아이콘을 직접 누르시면 즉시 컴퓨터 바탕화면에 링커엑스 앱이 설치됩니다!
+                </p>
+              </div>
+            )}
+
             {/* Quick Actions (Primary Run Button) */}
             <div className="border-t border-slate-100 pt-5 mt-6 flex flex-col gap-2.5 text-center">
               <button
@@ -391,15 +401,19 @@ const Navbar = ({ onOpenInquiry, onNavigateToSupport, onNavigateToHome, user, su
             display: 'flex', flexDirection: 'column', alignItems: 'center',
             animation: 'modalScaleIn 0.3s cubic-bezier(0.34, 1.56, 0.64, 1)'
           }}>
-            {/* Success Check Icon */}
-            <div style={{
-              width: '64px', height: '64px', borderRadius: '50%',
-              backgroundColor: '#ecfdf5', display: 'flex', alignItems: 'center',
-              justifyContent: 'center', marginBottom: '20px', color: '#10b981'
-            }}>
-              <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round">
-                <polyline points="20 6 9 17 4 12" />
-              </svg>
+            {/* Success Package Box Visual */}
+            <div style={{ position: 'relative', width: '160px', height: '160px', marginBottom: '20px' }}>
+              <img src="/images/product_erp.png" alt="Linker X Package" style={{ width: '100%', height: '100%', objectFit: 'contain' }} />
+              <div style={{
+                position: 'absolute', bottom: '0', right: '10px', width: '36px', height: '36px',
+                borderRadius: '50%', backgroundColor: '#10b981', display: 'flex',
+                alignItems: 'center', justifyContent: 'center', color: '#ffffff',
+                boxShadow: '0 4px 10px rgba(16,185,129,0.35)', border: '2.5px solid #ffffff'
+              }}>
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round">
+                  <polyline points="20 6 9 17 4 12" />
+                </svg>
+              </div>
             </div>
 
             <h3 style={{ margin: '0 0 8px 0', fontSize: '1.2rem', fontWeight: 800, color: '#0f172a' }}>
