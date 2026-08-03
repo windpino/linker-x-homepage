@@ -15,12 +15,19 @@ const Navbar = ({ onOpenInquiry, onNavigateToSupport, onNavigateToHome, user, su
   const [showManualGuide, setShowManualGuide] = useState(false);
   const [installAlertMsg, setInstallAlertMsg] = useState('');
   const [showMyDashboard, setShowMyDashboard] = useState(false);
+  const [isPromptAvailable, setIsPromptAvailable] = useState(false);
 
   // Capture PWA installation prompt event
   useEffect(() => {
+    if (window.deferredPrompt) {
+      setDeferredPrompt(window.deferredPrompt);
+      setIsPromptAvailable(true);
+    }
+
     const handleBeforeInstallPrompt = (e) => {
       e.preventDefault();
       setDeferredPrompt(e);
+      setIsPromptAvailable(true);
     };
 
     window.addEventListener('beforeinstallprompt', handleBeforeInstallPrompt);
@@ -105,7 +112,7 @@ const Navbar = ({ onOpenInquiry, onNavigateToSupport, onNavigateToHome, user, su
       }
     } else {
       // PWA prompt not loaded or not supported by current browser (e.g. Chrome not fully loaded sw.js yet, or iOS Safari)
-      setInstallAlertMsg('현재 브라우저가 자동 설치를 지원하지 않거나 준비 중입니다. 3초 대기 후 새로고침(F5) 해보시거나, 아래 [기기별 설치 안내]를 눌러 바로가기를 생성해 주세요!');
+      setInstallAlertMsg('💡 [주소창에서 직접 설치하기] 브라우저 자동 팝업이 대기 중입니다. 브라우저 주소창 맨 오른쪽 끝에 있는 [모니터 모양(🖥️+⬇️)] 또는 [앱 설치] 아이콘을 누르시면 바탕화면에 링커엑스가 즉시 설치됩니다!');
       setShowManualGuide(true); // Automatically open manual guide accordion to assist the user
     }
   };
@@ -333,13 +340,16 @@ const Navbar = ({ onOpenInquiry, onNavigateToSupport, onNavigateToHome, user, su
             <div className="border-t border-slate-100 pt-5 flex flex-col gap-2.5 text-center">
               <button
                 onClick={() => {
-                  setShowInstallGuide(false);
+                  const hasPrompt = deferredPrompt || window.deferredPrompt;
+                  if (hasPrompt) {
+                    setShowInstallGuide(false);
+                  }
                   executePWAInstall();
                 }}
                 className="w-full bg-emerald-600 hover:bg-emerald-700 text-white font-extrabold text-xs py-4 rounded-xl transition-all shadow-md shadow-emerald-600/10 hover:shadow-emerald-600/20 flex items-center justify-center gap-1.5"
               >
                 <Download size={14} />
-                링커엑스 1초 자동 설치 시작하기
+                {isPromptAvailable ? '링커엑스 1초 자동 설치 시작하기' : '브라우저 주소창에서 설치하기 (안내)'}
               </button>
 
               {/* Accordion Toggle for manual guide */}
