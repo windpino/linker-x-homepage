@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { Package, Menu, X, Phone, User, LogOut, Monitor, Download, AlertCircle, Sparkles } from 'lucide-react';
 import { auth } from '../firebase';
 import { signOut } from 'firebase/auth';
+import MyDashboardModal from './MyDashboardModal';
 
 const Navbar = ({ onOpenInquiry, onNavigateToSupport, onNavigateToHome, user, subView }) => {
   const [isOpen, setIsOpen] = useState(false);
@@ -13,6 +14,7 @@ const Navbar = ({ onOpenInquiry, onNavigateToSupport, onNavigateToHome, user, su
   const [showInstallSuccess, setShowInstallSuccess] = useState(false);
   const [showManualGuide, setShowManualGuide] = useState(false);
   const [installAlertMsg, setInstallAlertMsg] = useState('');
+  const [showMyDashboard, setShowMyDashboard] = useState(false);
 
   // Capture PWA installation prompt event
   useEffect(() => {
@@ -156,14 +158,12 @@ const Navbar = ({ onOpenInquiry, onNavigateToSupport, onNavigateToHome, user, su
                   <User size={13} className="text-blue-400" />
                   <span>{user.email.split('@')[0]}</span>
                 </div>
-                {subView !== 'dashboard' && (
-                  <button
-                    onClick={onOpenInquiry}
-                    className="bg-blue-600 hover:bg-blue-500 text-white text-xs font-bold px-3 py-1.5 rounded-lg transition-all"
-                  >
-                    대시보드
-                  </button>
-                )}
+                <button
+                  onClick={() => setShowMyDashboard(true)}
+                  className="bg-blue-600 hover:bg-blue-700 text-white text-xs font-extrabold px-3 py-1.5 rounded-lg transition-all"
+                >
+                  계약 & 마이페이지
+                </button>
                 <button
                   onClick={handleLogout}
                   className="text-xs font-bold text-slate-400 hover:text-red-400 transition-colors py-2"
@@ -229,17 +229,15 @@ const Navbar = ({ onOpenInquiry, onNavigateToSupport, onNavigateToHome, user, su
                   <div className="text-center py-2.5 text-xs text-slate-400 font-extrabold bg-slate-900 rounded-lg">
                     접속 계정: {user.email}
                   </div>
-                  {subView !== 'dashboard' && (
-                    <button 
-                      onClick={() => { setIsOpen(false); onOpenInquiry(); }}
-                      className="w-full text-center py-2.5 rounded-lg bg-blue-600 text-white font-bold hover:bg-blue-500"
-                    >
-                      대시보드 바로가기
-                    </button>
-                  )}
+                  <button 
+                    onClick={() => { setIsOpen(false); setShowMyDashboard(true); }}
+                    className="w-full text-center py-2.5 rounded-lg bg-blue-600 text-white font-extrabold hover:bg-blue-700"
+                  >
+                    계약 & 마이페이지
+                  </button>
                   <button 
                     onClick={() => { setIsOpen(false); handleLogout(); }}
-                    className="w-full text-center py-2.5 rounded-lg border border-slate-850 text-red-400 font-bold hover:bg-slate-900"
+                    className="w-full text-center py-2.5 rounded-lg border border-slate-800 text-red-400 font-bold hover:bg-slate-900"
                   >
                     로그아웃
                   </button>
@@ -508,6 +506,14 @@ const Navbar = ({ onOpenInquiry, onNavigateToSupport, onNavigateToHome, user, su
             </button>
           </div>
         </div>
+      )}
+
+      {/* Client My Dashboard Modal Overlay */}
+      {showMyDashboard && user && (
+        <MyDashboardModal 
+          user={user} 
+          onClose={() => setShowMyDashboard(false)} 
+        />
       )}
 
       <style>{`
