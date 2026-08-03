@@ -6,21 +6,20 @@
     <script>
       (function() {
         // Force cleanup of obsolete service workers on initial load to resolve caching blocks
-        if ('serviceWorker' in navigator) {
+        if ('serviceWorker' in navigator && !sessionStorage.getItem('sw_cleared')) {
           navigator.serviceWorker.getRegistrations().then(function(registrations) {
-            for (let registration of registrations) {
-              registration.unregister().then(function(success) {
-                if (success) {
-                  console.log('Obsolete Service Worker cleared.');
-                  // Clear caches associated with PWA
-                  if ('caches' in window) {
-                    caches.keys().then(function(names) {
-                      for (let name of names) caches.delete(name);
-                    });
-                  }
-                  window.location.reload();
-                }
-              });
+            if (registrations.length > 0) {
+              for (let registration of registrations) {
+                registration.unregister();
+              }
+              // Clear caches associated with PWA
+              if ('caches' in window) {
+                caches.keys().then(function(names) {
+                  for (let name of names) caches.delete(name);
+                });
+              }
+              sessionStorage.setItem('sw_cleared', 'true');
+              window.location.reload();
             }
           });
         }
