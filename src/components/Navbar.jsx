@@ -277,7 +277,7 @@ const Navbar = ({ onOpenInquiry, onNavigateToSupport, onNavigateToHome, user, su
           className="fixed inset-0 z-50 flex items-center justify-center p-4 animate-fade-in"
           style={{ backgroundColor: 'rgba(2, 6, 23, 0.6)', backdropFilter: 'blur(8px)' }}
         >
-          <div className="relative w-full max-w-md bg-white border border-slate-200/80 rounded-[32px] shadow-[0_25px_60px_-15px_rgba(2,6,23,0.12)] p-8 text-slate-900 overflow-hidden animate-in fade-in zoom-in-95 duration-200">
+          <div className="relative w-full max-w-sm bg-white border border-slate-200/80 rounded-[32px] shadow-[0_25px_60px_-15px_rgba(2,6,23,0.12)] p-8 text-slate-900 overflow-hidden animate-in fade-in zoom-in-95 duration-200">
             {/* Top design strip */}
             <div className="absolute top-0 left-0 w-full h-1.5 bg-emerald-600" />
             
@@ -294,108 +294,32 @@ const Navbar = ({ onOpenInquiry, onNavigateToSupport, onNavigateToHome, user, su
               <div className="w-16 h-16 bg-emerald-50 border border-emerald-100 rounded-3xl flex items-center justify-center mx-auto mb-5 shadow-sm">
                 <img src="/logo192.png" alt="Linker X App Icon" className="w-11 h-11 object-contain" />
               </div>
-              <span className="inline-block bg-emerald-50 text-emerald-700 text-[10px] font-black px-2.5 py-1 rounded-full mb-2">웰컴 설치 혜택</span>
-              <h3 className="text-xl font-black text-slate-950 tracking-tight leading-tight">링커엑스 바탕화면 앱 설치</h3>
+              <span className="inline-block bg-emerald-50 text-emerald-700 text-[10px] font-black px-2.5 py-1 rounded-full mb-2">원클릭 간편 가동</span>
+              <h3 className="text-lg font-black text-slate-950 tracking-tight leading-tight">링커엑스 바탕화면 앱 설치</h3>
               <p className="text-xs text-slate-500 font-bold mt-2 leading-relaxed">
-                클라우드 앱 서비스로 바탕화면에 전용 실행 아이콘을 생성하며, 매번 브라우저를 켤 필요 없이 다이렉트로 원클릭 로그인됩니다.
+                클라우드 앱 서비스로 바탕화면에 바로가기 실행 아이콘을 생성하며, 매번 브라우저를 켤 필요 없이 즉각 실행됩니다.
               </p>
             </div>
 
-            {/* Install Alert Message */}
-            {installAlertMsg && (
-              <div className="mt-2 mb-4 bg-amber-50 border border-amber-250/60 rounded-2xl p-4 text-left flex items-start gap-2.5">
-                <AlertCircle size={16} className="text-amber-600 shrink-0 mt-0.5" />
-                <span className="text-[11px] font-bold text-amber-800 leading-normal">{installAlertMsg}</span>
-              </div>
-            )}
-
-            {/* Core Features Marketing Section */}
-            <div className="my-6 space-y-3">
-              <div className="p-3.5 bg-slate-50/70 border border-slate-100 rounded-2xl flex items-start gap-3">
-                <div className="w-6 h-6 bg-emerald-100/60 text-emerald-600 rounded-lg flex items-center justify-center shrink-0 text-xs font-black">1</div>
-                <div>
-                  <h4 className="text-xs font-black text-slate-950">완벽한 유통·물류 통합 관리</h4>
-                  <p className="text-[10px] text-slate-500 font-bold mt-0.5 leading-relaxed">판매, 실시간 재고 추적, 현장영업 및 대리점 수발주가 하나로 자동 연동됩니다.</p>
-                </div>
-              </div>
-
-              <div className="p-3.5 bg-slate-50/70 border border-slate-100 rounded-2xl flex items-start gap-3">
-                <div className="w-6 h-6 bg-emerald-100/60 text-emerald-600 rounded-lg flex items-center justify-center shrink-0 text-xs font-black">2</div>
-                <div>
-                  <h4 className="text-xs font-black text-slate-950">인건비 & 고정비 즉시 절감</h4>
-                  <p className="text-[10px] text-slate-500 font-bold mt-0.5 leading-relaxed">직원 1인 이상의 분량을 클릭 몇 번으로 스마트하게 처리해 복잡한 유통 업무를 최적화합니다.</p>
-                </div>
-              </div>
-
-              <div className="p-3.5 bg-slate-50/70 border border-slate-100 rounded-2xl flex items-start gap-3">
-                <div className="w-6 h-6 bg-emerald-100/60 text-emerald-600 rounded-lg flex items-center justify-center shrink-0 text-xs font-black">3</div>
-                <div>
-                  <h4 className="text-xs font-black text-slate-950">실시간 다바이스 동기화</h4>
-                  <p className="text-[10px] text-slate-500 font-bold mt-0.5 leading-relaxed">PC 프로그램은 물론, 현장용 스마트폰 앱 및 PDA, 바코드 스캐너와 실시간 동기화됩니다.</p>
-                </div>
-              </div>
-            </div>
-
             {/* Quick Actions (Primary Run Button) */}
-            <div className="border-t border-slate-100 pt-5 flex flex-col gap-2.5 text-center">
+            <div className="border-t border-slate-100 pt-5 mt-6 flex flex-col gap-2.5 text-center">
               <button
                 onClick={() => {
-                  const hasPrompt = deferredPrompt || window.deferredPrompt;
-                  if (hasPrompt) {
-                    setShowInstallGuide(false);
-                  }
                   executePWAInstall();
                 }}
                 className="w-full bg-emerald-600 hover:bg-emerald-700 text-white font-extrabold text-xs py-4 rounded-xl transition-all shadow-md shadow-emerald-600/10 hover:shadow-emerald-600/20 flex items-center justify-center gap-1.5"
               >
                 <Download size={14} />
-                {isPromptAvailable ? '링커엑스 1초 자동 설치 시작하기' : '브라우저 주소창에서 설치하기 (안내)'}
+                링커엑스 자동 설치 시작하기
               </button>
-
-              {/* Accordion Toggle for manual guide */}
-              <button
-                type="button"
-                onClick={() => setShowManualGuide(!showManualGuide)}
-                className="text-[11px] text-slate-500 hover:text-slate-800 font-bold flex items-center justify-center gap-1 py-1"
-              >
-                <span>자동 설치가 안 될 경우 (기기별 설치 안내)</span>
-                <span className="text-[9px] transition-transform duration-200" style={{ transform: showManualGuide ? 'rotate(180deg)' : 'rotate(0deg)' }}>
-                  ▼
-                </span>
-              </button>
-
-              {/* Manual guides content showing under accordion */}
-              {showManualGuide && (
-                <div className="mt-2 space-y-3.5 text-left border-t border-slate-100 pt-3.5 animate-in fade-in duration-200">
-                  <div className="flex gap-2">
-                    <span className="text-[10px] font-black text-emerald-600 shrink-0">PC:</span>
-                    <p className="text-[10.5px] text-slate-500 font-bold leading-normal">
-                      주소창 오른쪽 끝의 <span className="text-slate-900 font-black">[모니터 설치 모양]</span> 아이콘을 클릭하거나 브라우저 설정 메뉴에서 <span className="text-slate-900 font-black">[앱 설치]</span>를 선택하면 연두색 X 아이콘이 바탕화면에 생성됩니다.
-                    </p>
-                  </div>
-                  <div className="flex gap-2">
-                    <span className="text-[10px] font-black text-emerald-600 shrink-0">아이폰:</span>
-                    <p className="text-[10.5px] text-slate-500 font-bold leading-normal">
-                      Safari 브라우저 하단의 <span className="text-slate-900 font-black">[공유하기 버튼 (네모 위 화살표)]</span>을 클릭하고 메뉴 아래로 내려 <span className="text-slate-900 font-black">[홈 화면에 추가]</span>를 눌러주세요.
-                    </p>
-                  </div>
-                  <div className="flex gap-2">
-                    <span className="text-[10px] font-black text-emerald-600 shrink-0">안드로이드:</span>
-                    <p className="text-[10.5px] text-slate-500 font-bold leading-normal">
-                      삼성인터넷/크롬 브라우저 우측 하단 삼선 메뉴에서 <span className="text-emerald-600 font-black">[앱 추가] ➔ [홈 화면]</span>을 차례로 탭해 줍니다.
-                    </p>
-                  </div>
-                </div>
-              )}
 
               <button
                 onClick={() => setShowInstallGuide(false)}
-                className="w-full bg-slate-50 hover:bg-slate-100 text-slate-500 font-extrabold text-xs py-3.5 rounded-xl transition-all"
+                className="w-full bg-slate-50 hover:bg-slate-100 text-slate-500 font-extrabold text-xs py-3 rounded-xl transition-all"
               >
                 닫기
               </button>
             </div>
-
           </div>
         </div>
       )}
@@ -499,8 +423,8 @@ const Navbar = ({ onOpenInquiry, onNavigateToSupport, onNavigateToHome, user, su
               marginBottom: '24px',
               width: '100%'
             }}>
-              <span style={{ fontWeight: 800, color: '#0f172a', display: 'block', marginBottom: '4px' }}>💡 바탕화면에 아이콘이 생성되지 않았나요?</span>
-              설치된 링커엑스 창 우측 상단의 <span style={{ fontWeight: 700, color: '#0f172a' }}>[메뉴(점 3개)] ➔ [저장 및 공유] ➔ [바로가기 만들기]</span> 또는 <span style={{ fontWeight: 700, color: '#0f172a' }}>[도구 더보기 ➔ 바로가기 만들기]</span>를 누르시면 바탕화면에 링커엑스 로고 아이콘이 즉시 생성됩니다!
+              <span style={{ fontWeight: 800, color: '#0f172a', display: 'block', marginBottom: '4px' }}>💡 바탕화면에 바로가기가 보이지 않나요?</span>
+              크롬 브라우저 주소창 맨 우측 끝의 <span style={{ fontWeight: 700, color: '#0f172a' }}>[모니터 설치 모양(🖥️+⬇️)]</span>을 누르시면 즉시 단축 아이콘이 생성됩니다.
             </div>
 
             <button
