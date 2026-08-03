@@ -5,25 +5,25 @@
   "description": "판매·재고·현장영업·수발주·도매몰 통합관리 ERP 솔루션 링커엑스",
   "icons": [
     {
-      "src": "/logo192.png",
+      "src": "/images/logo.png",
       "type": "image/png",
       "sizes": "192x192",
       "purpose": "any"
     },
     {
-      "src": "/logo192.png",
+      "src": "/images/logo.png",
       "type": "image/png",
       "sizes": "192x192",
       "purpose": "maskable"
     },
     {
-      "src": "/logo512.png",
+      "src": "/images/logo.png",
       "type": "image/png",
       "sizes": "512x512",
       "purpose": "any"
     },
     {
-      "src": "/logo512.png",
+      "src": "/images/logo.png",
       "type": "image/png",
       "sizes": "512x512",
       "purpose": "maskable"
