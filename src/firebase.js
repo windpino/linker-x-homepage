@@ -2,14 +2,19 @@ import { initializeApp } from "firebase/app";
 import { getFirestore } from "firebase/firestore";
 import { getAuth } from "firebase/auth";
 
+const getCleanEnv = (val) => {
+  if (typeof val !== 'string') return val;
+  return val.replace(/['"\s\r\n]/g, '').trim();
+};
+
 const firebaseConfig = {
-  apiKey: import.meta.env.VITE_FIREBASE_API_KEY,
-  authDomain: import.meta.env.VITE_FIREBASE_AUTH_DOMAIN,
-  projectId: import.meta.env.VITE_FIREBASE_PROJECT_ID,
-  storageBucket: import.meta.env.VITE_FIREBASE_STORAGE_BUCKET,
-  messagingSenderId: import.meta.env.VITE_FIREBASE_MESSAGING_SENDER_ID,
-  appId: import.meta.env.VITE_FIREBASE_APP_ID,
-  measurementId: import.meta.env.VITE_FIREBASE_MEASUREMENT_ID
+  apiKey: getCleanEnv(import.meta.env.VITE_FIREBASE_API_KEY),
+  authDomain: getCleanEnv(import.meta.env.VITE_FIREBASE_AUTH_DOMAIN),
+  projectId: getCleanEnv(import.meta.env.VITE_FIREBASE_PROJECT_ID),
+  storageBucket: getCleanEnv(import.meta.env.VITE_FIREBASE_STORAGE_BUCKET),
+  messagingSenderId: getCleanEnv(import.meta.env.VITE_FIREBASE_MESSAGING_SENDER_ID),
+  appId: getCleanEnv(import.meta.env.VITE_FIREBASE_APP_ID),
+  measurementId: getCleanEnv(import.meta.env.VITE_FIREBASE_MEASUREMENT_ID)
 };
 
 let app;
