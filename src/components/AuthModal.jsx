@@ -75,15 +75,19 @@ const AuthModal = ({ onClose, initialTab = 'signup' }) => {
         }
       }
 
-      // Linker X Sync: Setup company schema
+      // Linker X Sync: Setup company schema (Create company ID from email)
+      const emailParts = user.email.split('@');
+      const emailPrefix = emailParts[0].replace(/[^a-zA-Z0-9]/g, '');
+      const emailDomain = emailParts[1] ? emailParts[1].split('.')[0].replace(/[^a-zA-Z0-9]/g, '') : '';
       let cleanCompanyId = companyId.trim().toLowerCase();
-      let cleanCompanyName = companyName.trim();
-
       if (!cleanCompanyId) {
-        // Fallback for social google logins
-        const emailPrefix = user.email.split('@')[0].replace(/[^a-zA-Z0-9]/g, '');
-        cleanCompanyId = emailPrefix || `lx${Date.now().toString().slice(-6)}`;
-        cleanCompanyName = `${emailPrefix || '신규회원'} 링커엑스`;
+        // Safe unique ID combining prefix and domain (e.g. admin@excorp.com -> adminexcorp)
+        cleanCompanyId = `${emailPrefix}${emailDomain}`.toLowerCase() || `lx${Date.now().toString().slice(-6)}`;
+      }
+      
+      let cleanCompanyName = companyName.trim();
+      if (!cleanCompanyName) {
+        cleanCompanyName = `${emailPrefix.toUpperCase() || '신규회원'} 링커엑스`;
       }
 
       // 1. Create client company info for Linker X ERP compat
@@ -194,19 +198,8 @@ const AuthModal = ({ onClose, initialTab = 'signup' }) => {
     try {
       if (activeTab === 'signup') {
         // 0. Company details validation
-        if (!companyIdInput.trim()) {
-          setErrorMsg('원하는 회사 ID 코드를 입력해 주세요.');
-          setIsLoading(false);
-          return;
-        }
         if (!companyNameInput.trim()) {
           setErrorMsg('상호(회사명)를 입력해 주세요.');
-          setIsLoading(false);
-          return;
-        }
-        // Alpha-numeric filter for login compatibility in Linker X App
-        if (!/^[a-zA-Z0-9_-]+$/.test(companyIdInput.trim())) {
-          setErrorMsg('회사 ID 코드는 영문, 숫자, 하이픈(-) 및 언더바(_)만 사용 가능합니다.');
           setIsLoading(false);
           return;
         }
@@ -215,8 +208,8 @@ const AuthModal = ({ onClose, initialTab = 'signup' }) => {
         const userCredential = await createUserWithEmailAndPassword(auth, email, password);
         const user = userCredential.user;
 
-        // Create user profile and sync with companies database in Firestore
-        await createOrGetUserDoc(user, referredByInput, companyIdInput, companyNameInput);
+        // Create user profile and sync with companies database in Firestore (auto-generate company ID)
+        await createOrGetUserDoc(user, referredByInput, "", companyNameInput);
 
         // Send Email Verification Link
         try {
@@ -397,41 +390,7 @@ const AuthModal = ({ onClose, initialTab = 'signup' }) => {
                 </div>
               )}
 
-              {/* Company Code & Name inputs (Signup Only) */}
-              {activeTab === 'signup' && (
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                  <div>
-                    <label className="block text-[12px] font-extrabold text-slate-500 uppercase tracking-wider mb-2">원하는 회사 ID 코드</label>
-                    <div className="relative group">
-                      <Lock className="absolute left-3.5 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-400 group-focus-within:text-blue-600 transition-colors" />
-                      <input
-                        type="text"
-                        value={companyIdInput}
-                        onChange={e => setCompanyIdInput(e.target.value)}
-                        placeholder="영문/숫자 예: excorp"
-                        className="w-full bg-slate-50 border border-slate-200/80 focus:border-blue-600 focus:bg-white rounded-2xl py-3.5 pl-12 pr-4 text-slate-900 text-[15px] font-bold outline-none transition-all focus:ring-4 focus:ring-blue-600/5 placeholder:text-slate-400 placeholder:font-normal"
-                        required
-                      />
-                    </div>
-                  </div>
-                  <div>
-                    <label className="block text-[12px] font-extrabold text-slate-500 uppercase tracking-wider mb-2">회사명 (상호)</label>
-                    <div className="relative group">
-                      <Sparkles className="absolute left-3.5 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-400 group-focus-within:text-blue-600 transition-colors" />
-                      <input
-                        type="text"
-                        value={companyNameInput}
-                        onChange={e => setCompanyNameInput(e.target.value)}
-                        placeholder="상호명 입력"
-                        className="w-full bg-slate-50 border border-slate-200/80 focus:border-blue-600 focus:bg-white rounded-2xl py-3.5 pl-12 pr-4 text-slate-900 text-[15px] font-bold outline-none transition-all focus:ring-4 focus:ring-blue-600/5 placeholder:text-slate-400 placeholder:font-normal"
-                        required
-                      />
-                    </div>
-                  </div>
-                </div>
-              )}
-
-              {/* Email input */}
+              {/* Email input (Always first) */}
               <div>
                 <label className="block text-[12px] font-extrabold text-slate-500 uppercase tracking-wider mb-2">이메일 계정</label>
                 <div className="relative group">
@@ -447,7 +406,7 @@ const AuthModal = ({ onClose, initialTab = 'signup' }) => {
                 </div>
               </div>
 
-              {/* Password input */}
+              {/* Password input (Always second) */}
               <div>
                 <label className="block text-[12px] font-extrabold text-slate-500 uppercase tracking-wider mb-2">비밀번호</label>
                 <div className="relative group">
@@ -462,6 +421,24 @@ const AuthModal = ({ onClose, initialTab = 'signup' }) => {
                   />
                 </div>
               </div>
+
+              {/* Company Name input (Signup Only) */}
+              {activeTab === 'signup' && (
+                <div>
+                  <label className="block text-[12px] font-extrabold text-slate-500 uppercase tracking-wider mb-2">회사명 (상호)</label>
+                  <div className="relative group">
+                    <Sparkles className="absolute left-3.5 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-400 group-focus-within:text-blue-600 transition-colors" />
+                    <input
+                      type="text"
+                      value={companyNameInput}
+                      onChange={e => setCompanyNameInput(e.target.value)}
+                      placeholder="상호명 입력"
+                      className="w-full bg-slate-50 border border-slate-200/80 focus:border-blue-600 focus:bg-white rounded-2xl py-3.5 pl-12 pr-4 text-slate-900 text-[15px] font-bold outline-none transition-all focus:ring-4 focus:ring-blue-600/5 placeholder:text-slate-400 placeholder:font-normal"
+                      required
+                    />
+                  </div>
+                </div>
+              )}
 
               {/* Submit button */}
               <button
