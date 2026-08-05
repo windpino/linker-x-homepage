@@ -90,31 +90,10 @@ const Navbar = ({ onOpenInquiry, onNavigateToSupport, onNavigateToHome, user, su
     setIsOpen(false); // Close mobile drawer
   };
 
-  // Perform actual PWA installation triggered from the welcome modal button
-  const executePWAInstall = async () => {
-    // 0) Check if already running inside standalone app
-    const isStandalone = window.matchMedia('(display-mode: standalone)').matches || window.navigator.standalone;
-    if (isStandalone) {
-      alert('이미 링커엑스 바탕화면 앱이 설치되어 실행 중입니다!');
-      return;
-    }
-
-    const promptEvent = deferredPrompt || window.deferredPrompt;
-    if (promptEvent) {
-      setInstallAlertMsg(''); // Clear alerts
-      promptEvent.prompt();
-      const { outcome } = await promptEvent.userChoice;
-      if (outcome === 'accepted') {
-        console.log('PWA installation accepted by user.');
-        setDeferredPrompt(null);
-        window.deferredPrompt = null;
-        startInstallAnimation();
-      } else {
-        startInstallAnimation();
-      }
-    } else {
-      startInstallAnimation();
-    }
+  // Redirect to the main ERP system domain with an installation query parameter
+  const executePWAInstall = () => {
+    window.location.href = "https://linker-x-project.vercel.app/?install=true";
+    setShowInstallGuide(false);
   };
 
   const navBgClass = user ? "bg-slate-950/80 border-slate-900 text-white backdrop-blur-md" : "bg-white border-slate-200 text-slate-650 shadow-sm";
@@ -302,14 +281,12 @@ const Navbar = ({ onOpenInquiry, onNavigateToSupport, onNavigateToHome, user, su
             </div>
 
             {/* Simple escort note when automatic prompt is blocked by browser */}
-            {!isPromptAvailable && (
-              <div className="mt-4 bg-blue-50/60 border border-blue-100/50 rounded-2xl p-3.5 text-left flex items-start gap-2">
-                <span className="text-[10px] bg-blue-600 text-white font-extrabold px-1.5 py-0.5 rounded shrink-0">안내</span>
-                <p className="text-[10.5px] text-blue-850 font-bold leading-normal">
-                  자동 팝업이 대기 중입니다. 브라우저 주소창 오른쪽 끝의 <span className="text-blue-950 font-black">[모니터 설치 모양(🖥️+⬇️)]</span> 아이콘을 직접 누르시면 즉시 컴퓨터 바탕화면에 링커엑스 앱이 설치됩니다!
-                </p>
-              </div>
-            )}
+            <div className="mt-4 bg-blue-50/60 border border-blue-100/50 rounded-2xl p-3.5 text-left flex items-start gap-2">
+              <span className="text-[10px] bg-blue-600 text-white font-extrabold px-1.5 py-0.5 rounded shrink-0">안내</span>
+              <p className="text-[10.5px] text-blue-850 font-bold leading-normal">
+                설치 시작을 누르면 회원사 ERP 전용 페이지로 이동하여 안전하고 신속하게 단독 앱 설치가 진행됩니다.
+              </p>
+            </div>
 
             {/* Quick Actions (Primary Run Button) */}
             <div className="border-t border-slate-100 pt-5 mt-6 flex flex-col gap-2.5 text-center">

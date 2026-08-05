@@ -2,58 +2,11 @@
 <html lang="ko">
   <head>
     <meta charset="UTF-8" />
-    <!-- PWA standalone mode redirect to Linker X app -->
-    <script>
-      (function() {
-        // Force cleanup of obsolete service workers on initial load to resolve caching blocks
-        if ('serviceWorker' in navigator && !sessionStorage.getItem('sw_cleared')) {
-          navigator.serviceWorker.getRegistrations().then(function(registrations) {
-            if (registrations.length > 0) {
-              for (let registration of registrations) {
-                registration.unregister();
-              }
-              // Clear caches associated with PWA
-              if ('caches' in window) {
-                caches.keys().then(function(names) {
-                  for (let name of names) caches.delete(name);
-                });
-              }
-              sessionStorage.setItem('sw_cleared', 'true');
-              window.location.reload();
-            }
-          });
-        }
-
-        function checkAndRedirect() {
-          const isStandalone = window.matchMedia('(display-mode: standalone)').matches 
-            || window.navigator.standalone 
-            || document.referrer.includes('android-app://')
-            || new URLSearchParams(window.location.search).get('source') === 'pwa'
-            || window.location.search.includes('source=pwa');
-
-          if (isStandalone) {
-            window.location.replace("https://linker-x-project.vercel.app/");
-            return true;
-          }
-          return false;
-        }
-
-        // Run instantly
-        if (!checkAndRedirect()) {
-          // If not detected immediately due to browser window creation delay, poll for 1.5s
-          let count = 0;
-          const interval = setInterval(function() {
-            count++;
-            if (checkAndRedirect() || count > 30) {
-              clearInterval(interval);
-            }
-          }, 50);
-        }
-      })();
-    </script>
+    <!-- Disabled PWA standalone redirect on homepage -->
     <link rel="icon" type="image/x-icon" href="/favicon.ico" />
     <link rel="apple-touch-icon" href="/logo192.png" />
-    <link rel="manifest" href="/manifest.json" />
+    <!-- Linker X main system handles the standalone PWA installation directly -->
+    <!-- <link rel="manifest" href="/manifest.json" /> -->
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Linker X - 물류·유통 통합 ERP 솔루션</title>
     <meta name="description" content="직원 1명 줄이는 프로그램 월 3만원. 판매·재고·현장영업·수발주·도매몰 통합관리 ERP 솔루션 링커엑스" />
