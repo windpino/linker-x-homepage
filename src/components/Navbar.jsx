@@ -273,18 +273,18 @@ const Navbar = ({ onOpenInquiry, onNavigateToSupport, onNavigateToHome, user, su
               <div className="w-16 h-16 bg-emerald-50 border border-emerald-100 rounded-3xl flex items-center justify-center mx-auto mb-5 shadow-sm">
                 <img src="/logo192.png" alt="Linker X App Icon" className="w-11 h-11 object-contain" />
               </div>
-              <span className="inline-block bg-emerald-50 text-emerald-700 text-[10px] font-black px-2.5 py-1 rounded-full mb-2">원클릭 간편 가동</span>
-              <h3 className="text-lg font-black text-slate-950 tracking-tight leading-tight">링커엑스 바탕화면 앱 설치</h3>
+              <span className="inline-block bg-blue-50 text-blue-700 text-[10px] font-black px-2.5 py-1 rounded-full mb-2">ERP 시스템 전용 설치</span>
+              <h3 className="text-lg font-black text-slate-950 tracking-tight leading-tight">링커엑스 ERP 시스템 앱 설치</h3>
               <p className="text-xs text-slate-500 font-bold mt-2 leading-relaxed">
-                클라우드 앱 서비스로 바탕화면에 바로가기 실행 아이콘을 생성하며, 매번 브라우저를 켤 필요 없이 즉각 실행됩니다.
+                본 프로그램은 홈페이지 접속용이 아닌, <span className="text-[#1d4ed8] font-black">회원사 전용 ERP 물류관리 시스템</span>으로 즉시 접속하는 단독 PC/모바일 애플리케이션을 설치합니다.
               </p>
             </div>
 
             {/* Simple escort note when automatic prompt is blocked by browser */}
-            <div className="mt-4 bg-blue-50/60 border border-blue-100/50 rounded-2xl p-3.5 text-left flex items-start gap-2">
-              <span className="text-[10px] bg-blue-600 text-white font-extrabold px-1.5 py-0.5 rounded shrink-0">안내</span>
-              <p className="text-[10.5px] text-blue-850 font-bold leading-normal">
-                설치 시작을 누르면 회원사 ERP 전용 페이지로 이동하여 안전하고 신속하게 단독 앱 설치가 진행됩니다.
+            <div className="mt-4 bg-emerald-50 border border-emerald-100 rounded-2xl p-3.5 text-left flex items-start gap-2">
+              <span className="text-[10px] bg-emerald-600 text-white font-extrabold px-1.5 py-0.5 rounded shrink-0">확인</span>
+              <p className="text-[10.5px] text-emerald-850 font-bold leading-normal">
+                설치 후 바탕화면 아이콘을 누르면 **홈페이지가 아닌 회원사 로그인 및 ERP 관리 화면**이 독립된 단독 프로그램 창으로 실행됩니다.
               </p>
             </div>
 
@@ -294,10 +294,10 @@ const Navbar = ({ onOpenInquiry, onNavigateToSupport, onNavigateToHome, user, su
                 onClick={() => {
                   executePWAInstall();
                 }}
-                className="w-full bg-emerald-600 hover:bg-emerald-700 text-white font-extrabold text-xs py-4 rounded-xl transition-all shadow-md shadow-emerald-600/10 hover:shadow-emerald-600/20 flex items-center justify-center gap-1.5"
+                className="w-full bg-blue-600 hover:bg-blue-700 text-white font-extrabold text-xs py-4 rounded-xl transition-all shadow-md shadow-blue-600/10 hover:shadow-blue-600/20 flex items-center justify-center gap-1.5"
               >
                 <Download size={14} />
-                링커엑스 자동 설치 시작하기
+                ERP 시스템 단독 앱 설치하기
               </button>
 
               <button
