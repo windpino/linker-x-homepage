@@ -167,14 +167,7 @@ const Navbar = ({ onOpenInquiry, onNavigateToSupport, onNavigateToHome, user, su
               </button>
             )}
 
-            {/* Linker X Installation Trigger Button */}
-            <button 
-              onClick={handleInstallApp}
-              className="bg-emerald-600 hover:bg-emerald-700 text-white px-4 py-2 rounded-lg text-xs font-black flex items-center gap-1.5 shadow-sm shadow-emerald-600/10 hover:shadow-emerald-600/20 transition-all"
-            >
-              <Download className="h-3.5 w-3.5" />
-              <span>링커엑스 설치</span>
-            </button>
+
 
             {/* Phone Hotline */}
             <div className="flex items-center gap-1 text-[#f97316] font-extrabold text-sm ml-2">
@@ -237,79 +230,13 @@ const Navbar = ({ onOpenInquiry, onNavigateToSupport, onNavigateToHome, user, su
                 </button>
               )}
 
-              {/* Mobile app install trigger */}
-              <button 
-                onClick={handleInstallApp}
-                className="w-full text-center py-2.5 rounded-lg bg-emerald-600 text-white font-bold hover:bg-emerald-700 flex items-center justify-center gap-1.5"
-              >
-                <Download size={14} />
-                링커엑스 모바일 앱 설치
-              </button>
+
             </div>
           </div>
         </div>
       )}
 
-      {/* Modern PWA Install Welcome & Advertising Modal */}
-      {showInstallGuide && (
-        <div 
-          className="fixed inset-0 z-50 flex items-center justify-center p-4 animate-fade-in"
-          style={{ backgroundColor: 'rgba(2, 6, 23, 0.6)', backdropFilter: 'blur(8px)' }}
-        >
-          <div className="relative w-full max-w-sm bg-white border border-slate-200/80 rounded-[32px] shadow-[0_25px_60px_-15px_rgba(2,6,23,0.12)] p-8 text-slate-900 overflow-hidden animate-in fade-in zoom-in-95 duration-200">
-            {/* Top design strip */}
-            <div className="absolute top-0 left-0 w-full h-1.5 bg-emerald-600" />
-            
-            {/* Close */}
-            <button 
-              onClick={() => setShowInstallGuide(false)}
-              className="absolute right-6 top-6 text-slate-400 hover:text-slate-700 p-2 rounded-xl hover:bg-slate-50 transition-all"
-            >
-              <X size={18} />
-            </button>
 
-            <div className="text-center mt-3">
-              {/* App Icon Container */}
-              <div className="w-16 h-16 bg-emerald-50 border border-emerald-100 rounded-3xl flex items-center justify-center mx-auto mb-5 shadow-sm">
-                <img src="/logo192.png" alt="Linker X App Icon" className="w-11 h-11 object-contain" />
-              </div>
-              <span className="inline-block bg-blue-50 text-blue-700 text-[10px] font-black px-2.5 py-1 rounded-full mb-2">ERP 시스템 전용 설치</span>
-              <h3 className="text-lg font-black text-slate-950 tracking-tight leading-tight">링커엑스 ERP 시스템 앱 설치</h3>
-              <p className="text-xs text-slate-500 font-bold mt-2 leading-relaxed">
-                본 프로그램은 홈페이지 접속용이 아닌, <span className="text-[#1d4ed8] font-black">회원사 전용 ERP 물류관리 시스템</span>으로 즉시 접속하는 단독 PC/모바일 애플리케이션을 설치합니다.
-              </p>
-            </div>
-
-            {/* Simple escort note when automatic prompt is blocked by browser */}
-            <div className="mt-4 bg-emerald-50 border border-emerald-100 rounded-2xl p-3.5 text-left flex items-start gap-2">
-              <span className="text-[10px] bg-emerald-600 text-white font-extrabold px-1.5 py-0.5 rounded shrink-0">확인</span>
-              <p className="text-[10.5px] text-emerald-850 font-bold leading-normal">
-                설치 후 바탕화면 아이콘을 누르면 **홈페이지가 아닌 회원사 로그인 및 ERP 관리 화면**이 독립된 단독 프로그램 창으로 실행됩니다.
-              </p>
-            </div>
-
-            {/* Quick Actions (Primary Run Button) */}
-            <div className="border-t border-slate-100 pt-5 mt-6 flex flex-col gap-2.5 text-center">
-              <button
-                onClick={() => {
-                  executePWAInstall();
-                }}
-                className="w-full bg-blue-600 hover:bg-blue-700 text-white font-extrabold text-xs py-4 rounded-xl transition-all shadow-md shadow-blue-600/10 hover:shadow-blue-600/20 flex items-center justify-center gap-1.5"
-              >
-                <Download size={14} />
-                ERP 시스템 단독 앱 설치하기
-              </button>
-
-              <button
-                onClick={() => setShowInstallGuide(false)}
-                className="w-full bg-slate-50 hover:bg-slate-100 text-slate-500 font-extrabold text-xs py-3 rounded-xl transition-all"
-              >
-                닫기
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
 
       {/* 링커엑스 전용 설치 마법사 모달 */}
       {isInstalling && (
