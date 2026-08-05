@@ -8,7 +8,7 @@ import {
   sendEmailVerification 
 } from 'firebase/auth';
 import { doc, setDoc, getDoc, collection, query, where, getDocs, updateDoc, increment } from 'firebase/firestore';
-import { X, Mail, Lock, Gift, UserPlus, LogIn, Sparkles, AlertCircle, ShieldCheck, Package, BadgeCheck } from 'lucide-react';
+import { X, Mail, Lock, Gift, UserPlus, LogIn, Sparkles, AlertCircle, ShieldCheck, Package, BadgeCheck, User, Phone } from 'lucide-react';
 
 const generateReferralCode = () => {
   const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
@@ -26,6 +26,8 @@ const AuthModal = ({ onClose, initialTab = 'signup' }) => {
   const [referredByInput, setReferredByInput] = useState('');
   const [companyIdInput, setCompanyIdInput] = useState('');
   const [companyNameInput, setCompanyNameInput] = useState('');
+  const [managerNameInput, setManagerNameInput] = useState('');
+  const [phoneInput, setPhoneInput] = useState('');
   const [errorMsg, setErrorMsg] = useState('');
   const [infoMsg, setInfoMsg] = useState('');
   const [isLoading, setIsLoading] = useState(false);
@@ -40,7 +42,7 @@ const AuthModal = ({ onClose, initialTab = 'signup' }) => {
   }, []);
 
   // Safe user doc creation helper for social logins and custom register
-  const createOrGetUserDoc = async (user, referredByCode = '', companyId = '', companyName = '') => {
+  const createOrGetUserDoc = async (user, referredByCode = '', companyId = '', companyName = '', managerName = '', phone = '') => {
     const userDocRef = doc(db, 'users', user.uid);
     const userDocSnap = await getDoc(userDocRef);
 
@@ -52,7 +54,7 @@ const AuthModal = ({ onClose, initialTab = 'signup' }) => {
 
       // Generate unique referral code for this new user
       const newReferralCode = generateReferralCode();
-      let referredByClean = referredByCode.trim().toUpperCase();
+      let referredByClean = referredByCode ? referredByCode.trim().toUpperCase() : '';
 
       // Process referral reward if code is provided
       let isReferralValid = false;
@@ -98,6 +100,8 @@ const AuthModal = ({ onClose, initialTab = 'signup' }) => {
         await setDoc(compDocRef, {
           id: cleanCompanyId,
           name: cleanCompanyName,
+          ceoName: managerName.trim(), // 담당자명을 ceoName에 매핑
+          contact: phone.trim(), // 전화번호를 contact에 매핑
           email: user.email,
           password: password || 'social-auth', // default password key
           status: 'pending_setup',
@@ -113,7 +117,7 @@ const AuthModal = ({ onClose, initialTab = 'signup' }) => {
           id: partnerId,
           loginId: user.email,
           password: password || 'social-auth',
-          name: cleanCompanyName,
+          name: managerName.trim() || cleanCompanyName, // 담당자명 우선 매핑
           email: user.email,
           companyId: cleanCompanyId,
           type: '매출처',
@@ -133,7 +137,9 @@ const AuthModal = ({ onClose, initialTab = 'signup' }) => {
         discountRate: 0,
         referralCount: 0,
         companyId: cleanCompanyId,
-        companyName: cleanCompanyName
+        companyName: cleanCompanyName,
+        managerName: managerName.trim(),
+        phone: phone.trim()
       });
 
       // Update inviter's referral rewards if valid
@@ -203,13 +209,23 @@ const AuthModal = ({ onClose, initialTab = 'signup' }) => {
           setIsLoading(false);
           return;
         }
+        if (!managerNameInput.trim()) {
+          setErrorMsg('담당자명을 입력해 주세요.');
+          setIsLoading(false);
+          return;
+        }
+        if (!phoneInput.trim()) {
+          setErrorMsg('전화번호(연락처)를 입력해 주세요.');
+          setIsLoading(false);
+          return;
+        }
 
         // Firebase Auth User Creation
         const userCredential = await createUserWithEmailAndPassword(auth, email, password);
         const user = userCredential.user;
 
         // Create user profile and sync with companies database in Firestore (auto-generate company ID)
-        await createOrGetUserDoc(user, referredByInput, "", companyNameInput);
+        await createOrGetUserDoc(user, referredByInput, "", companyNameInput, managerNameInput, phoneInput);
 
         // Send Email Verification Link
         try {
@@ -424,20 +440,53 @@ const AuthModal = ({ onClose, initialTab = 'signup' }) => {
 
               {/* Company Name input (Signup Only) */}
               {activeTab === 'signup' && (
-                <div>
-                  <label className="block text-[12px] font-extrabold text-slate-500 uppercase tracking-wider mb-2">회사명 (상호)</label>
-                  <div className="relative group">
-                    <Sparkles className="absolute left-3.5 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-400 group-focus-within:text-blue-600 transition-colors" />
-                    <input
-                      type="text"
-                      value={companyNameInput}
-                      onChange={e => setCompanyNameInput(e.target.value)}
-                      placeholder="상호명 입력"
-                      className="w-full bg-slate-50 border border-slate-200/80 focus:border-blue-600 focus:bg-white rounded-2xl py-3.5 pl-12 pr-4 text-slate-900 text-[15px] font-bold outline-none transition-all focus:ring-4 focus:ring-blue-600/5 placeholder:text-slate-400 placeholder:font-normal"
-                      required
-                    />
+                <>
+                  <div>
+                    <label className="block text-[12px] font-extrabold text-slate-500 uppercase tracking-wider mb-2">회사명 (상호)</label>
+                    <div className="relative group">
+                      <Sparkles className="absolute left-3.5 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-400 group-focus-within:text-blue-600 transition-colors" />
+                      <input
+                        type="text"
+                        value={companyNameInput}
+                        onChange={e => setCompanyNameInput(e.target.value)}
+                        placeholder="상호명 입력"
+                        className="w-full bg-slate-50 border border-slate-200/80 focus:border-blue-600 focus:bg-white rounded-2xl py-3.5 pl-12 pr-4 text-slate-900 text-[15px] font-bold outline-none transition-all focus:ring-4 focus:ring-blue-600/5 placeholder:text-slate-400 placeholder:font-normal"
+                        required
+                      />
+                    </div>
                   </div>
-                </div>
+
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                    <div>
+                      <label className="block text-[12px] font-extrabold text-slate-500 uppercase tracking-wider mb-2">담당자명 (실명)</label>
+                      <div className="relative group">
+                        <User className="absolute left-3.5 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-400 group-focus-within:text-blue-600 transition-colors" />
+                        <input
+                          type="text"
+                          value={managerNameInput}
+                          onChange={e => setManagerNameInput(e.target.value)}
+                          placeholder="담당자 성함"
+                          className="w-full bg-slate-50 border border-slate-200/80 focus:border-blue-600 focus:bg-white rounded-2xl py-3.5 pl-12 pr-4 text-slate-900 text-[15px] font-bold outline-none transition-all focus:ring-4 focus:ring-blue-600/5 placeholder:text-slate-400 placeholder:font-normal"
+                          required
+                        />
+                      </div>
+                    </div>
+                    <div>
+                      <label className="block text-[12px] font-extrabold text-slate-500 uppercase tracking-wider mb-2">전화번호 (연락처)</label>
+                      <div className="relative group">
+                        <Phone className="absolute left-3.5 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-400 group-focus-within:text-blue-600 transition-colors" />
+                        <input
+                          type="text"
+                          value={phoneInput}
+                          onChange={e => setPhoneInput(e.target.value)}
+                          placeholder="예: 010-1234-5678"
+                          className="w-full bg-slate-50 border border-slate-200/80 focus:border-blue-600 focus:bg-white rounded-2xl py-3.5 pl-12 pr-4 text-slate-900 text-[15px] font-bold outline-none transition-all focus:ring-4 focus:ring-blue-600/5 placeholder:text-slate-400 placeholder:font-normal"
+                          required
+                        />
+                      </div>
+                    </div>
+                  </div>
+                </>
               )}
 
               {/* Submit button */}
