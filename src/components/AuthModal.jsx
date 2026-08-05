@@ -21,7 +21,7 @@ const generateReferralCode = () => {
 
 const AuthModal = ({ onClose, initialTab = 'signup' }) => {
   const [activeTab, setActiveTab] = useState(initialTab); // 'signup' or 'login'
-  const [email, setEmail] = useState('');
+  const [loginId, setLoginId] = useState('');
   const [password, setPassword] = useState('');
   const [referredByInput, setReferredByInput] = useState('');
   const [companyIdInput, setCompanyIdInput] = useState('');
@@ -41,164 +41,64 @@ const AuthModal = ({ onClose, initialTab = 'signup' }) => {
     }
   }, []);
 
-  // Safe user doc creation helper for social logins and custom register
-  const createOrGetUserDoc = async (user, referredByCode = '', companyId = '', companyName = '', managerName = '', phone = '') => {
+  // Safe user doc creation helper for custom register
+  const createOrGetUserDoc = async (user, companyName = '', managerName = '', phone = '', loginId = '', rawPassword = '') => {
     const userDocRef = doc(db, 'users', user.uid);
     const userDocSnap = await getDoc(userDocRef);
 
     if (!userDocSnap.exists()) {
-      // Setup user trial date
       const now = new Date();
-      const trialEnd = new Date();
-      trialEnd.setDate(now.getDate() + 30);
-
-      // Generate unique referral code for this new user
-      const newReferralCode = generateReferralCode();
-      let referredByClean = referredByCode ? referredByCode.trim().toUpperCase() : '';
-
-      // Process referral reward if code is provided
-      let isReferralValid = false;
-      let inviterUid = null;
-      let inviterCurrentCount = 0;
-
-      if (referredByClean) {
-        const usersRef = collection(db, 'users');
-        const q = query(usersRef, where('referralCode', '==', referredByClean));
-        const querySnapshot = await getDocs(q);
-
-        if (!querySnapshot.empty) {
-          const inviterDoc = querySnapshot.docs[0];
-          inviterUid = inviterDoc.id;
-          const inviterData = inviterDoc.data();
-          inviterCurrentCount = inviterData.referralCount || 0;
-          isReferralValid = true;
-        } else {
-          referredByClean = '';
-        }
-      }
-
-      // Linker X Sync: Setup company schema (Create company ID from email)
-      const emailParts = user.email.split('@');
-      const emailPrefix = emailParts[0].replace(/[^a-zA-Z0-9]/g, '');
-      const emailDomain = emailParts[1] ? emailParts[1].split('.')[0].replace(/[^a-zA-Z0-9]/g, '') : '';
-      let cleanCompanyId = companyId.trim().toLowerCase();
-      if (!cleanCompanyId) {
-        // Safe unique ID combining prefix and domain (e.g. admin@excorp.com -> adminexcorp)
-        cleanCompanyId = `${emailPrefix}${emailDomain}`.toLowerCase() || `lx${Date.now().toString().slice(-6)}`;
-      }
-      
-      let cleanCompanyName = companyName.trim();
-      if (!cleanCompanyName) {
-        cleanCompanyName = `${emailPrefix.toUpperCase() || '신규회원'} 링커엑스`;
-      }
-
-      // 1. Create client company info for Linker X ERP compat
-      const compDocRef = doc(db, 'companies', cleanCompanyId);
-      const compDocSnap = await getDoc(compDocRef);
-      
-      if (!compDocSnap.exists()) {
-        await setDoc(compDocRef, {
-          id: cleanCompanyId,
-          name: cleanCompanyName,
-          ceoName: managerName.trim(), // 담당자명을 ceoName에 매핑
-          contact: phone.trim(), // 전화번호를 contact에 매핑
-          email: user.email,
-          password: password || 'social-auth', // default password key
-          status: 'pending_setup',
-          expiryDate: trialEnd.toISOString(), // sync 30 days trial
-          isLockedOnExpiry: true,
-          createdAt: now.toISOString()
-        });
-
-        // 2. Create partner master user sub-doc for partner role logs
-        const partnerId = Date.now();
-        const compositeId = String(partnerId);
-        const newPartner = {
-          id: partnerId,
-          loginId: user.email,
-          password: password || 'social-auth',
-          name: managerName.trim() || cleanCompanyName, // 담당자명 우선 매핑
-          email: user.email,
-          companyId: cleanCompanyId,
-          type: '매출처',
-          status: 'pending',
-          createdAt: now.toISOString()
-        };
-        await setDoc(doc(db, 'companies', cleanCompanyId, 'partners', compositeId), newPartner);
-      }
-
-      // Create new user document in homepage 'users' collection
+      // 1. Create client user info in homepage 'users' (Does not touch Linker X companies directly)
       await setDoc(userDocRef, {
-        email: user.email,
-        createdAt: now.toISOString(),
-        trialEndDate: trialEnd.toISOString(),
-        referralCode: newReferralCode,
-        referredBy: referredByClean || null,
-        discountRate: 0,
-        referralCount: 0,
-        companyId: cleanCompanyId,
-        companyName: cleanCompanyName,
+        uid: user.uid,
+        loginId: loginId.trim(),
+        password: rawPassword, // 보존용 패스워드
+        companyName: companyName.trim(),
         managerName: managerName.trim(),
-        phone: phone.trim()
+        phone: phone.trim(),
+        status: 'pending_approve',
+        createdAt: now.toISOString()
       });
 
-      // Update inviter's referral rewards if valid
-      if (isReferralValid && inviterUid) {
-        const inviterDocRef = doc(db, 'users', inviterUid);
-        const newCount = inviterCurrentCount + 1;
-        const newDiscount = Math.min(newCount * 10, 100);
-
-        await updateDoc(inviterDocRef, {
-          referralCount: increment(1),
-          discountRate: newDiscount
-        });
-      }
+      // 2. Create inquiry request so SuperAdmin can approve
+      const inquiryId = 'inq_' + Date.now();
+      await setDoc(doc(db, 'agency_inquiries', inquiryId), {
+        id: inquiryId,
+        uid: user.uid,
+        type: 'agency',
+        status: 'pending',
+        companyName: companyName.trim(),
+        ceoName: managerName.trim(),
+        email: loginId.trim(), // ID를 email 필드로 매핑하여 SuperAdmin 연동
+        password: rawPassword,
+        contact: phone.trim(),
+        content: '홈페이지 회원가입 신청',
+        appliedAt: now.toISOString()
+      });
       return true; // New registration
     }
-    return false; // Existing user login
-  };
-
-  // 1. Google OAuth Signup/Login
-  const handleGoogleAuth = async () => {
-    setErrorMsg('');
-    setInfoMsg('');
-    setIsLoading(true);
-    try {
-      const provider = new GoogleAuthProvider();
-      // Force account selection popup
-      provider.setCustomParameters({ prompt: 'select_account' });
-      
-      const result = await signInWithPopup(auth, provider);
-      const isNewUser = await createOrGetUserDoc(result.user, referredByInput);
-      
-      if (isNewUser) {
-        alert('구글 계정으로 링커엑스 1개월 무료 회원가입이 완료되었습니다!');
-      } else {
-        alert('구글 계정으로 로그인되었습니다!');
-      }
-      onClose();
-    } catch (err) {
-      console.error(err);
-      setErrorMsg('구글 로그인에 실패했습니다. 다시 시도해 주세요.');
-    } finally {
-      setIsLoading(false);
-    }
+    return false; // Existing login
   };
 
 
-  // 3. Regular Email signup/login with email verification link trigger
+
+
+  // 3. Custom ID signup/login using virtual email mapping
   const handleAuth = async (e) => {
     e.preventDefault();
     setErrorMsg('');
     setInfoMsg('');
-    if (!email || !password) {
-      setErrorMsg('이메일과 비밀번호를 모두 입력해 주세요.');
+    if (!loginId || !password) {
+      setErrorMsg('아이디와 비밀번호를 모두 입력해 주세요.');
       return;
     }
     if (password.length < 6) {
       setErrorMsg('비밀번호는 최소 6자리 이상이어야 합니다.');
       return;
     }
+
+    const trimmedId = loginId.trim().toLowerCase();
+    const virtualEmail = `${trimmedId}@linkerx-user.local`;
 
     setIsLoading(true);
     try {
@@ -220,43 +120,30 @@ const AuthModal = ({ onClose, initialTab = 'signup' }) => {
           return;
         }
 
-        // Firebase Auth User Creation
-        const userCredential = await createUserWithEmailAndPassword(auth, email, password);
+        // Firebase Auth User Creation using virtual email
+        const userCredential = await createUserWithEmailAndPassword(auth, virtualEmail, password);
         const user = userCredential.user;
 
-        // Create user profile and sync with companies database in Firestore (auto-generate company ID)
-        await createOrGetUserDoc(user, referredByInput, "", companyNameInput, managerNameInput, phoneInput);
-
-        // Send Email Verification Link
-        try {
-          await sendEmailVerification(user);
-          setInfoMsg('💌 입력하신 메일로 인증 링크를 발송했습니다. 인증을 완료해 주세요!');
-          alert('회원가입 완료!\n전송된 메일함에서 링크를 클릭하여 인증을 완료해 주세요.');
-        } catch (mailErr) {
-          console.warn('Mail send error:', mailErr);
-          alert('회원가입이 완료되었습니다! (마이 대시보드로 이동합니다.)');
-        }
+        // Save signup information locally inside users and agency_inquiries collections only (approval-required)
+        await createOrGetUserDoc(user, companyNameInput, managerNameInput, phoneInput, loginId, password);
+        
+        alert('회원가입 및 도입 상담 신청이 성공적으로 접수되었습니다!\n슈퍼관리자의 가입 승인 후 링커엑스 시스템을 이용하실 수 있습니다.');
       } else {
-        // Login flow
-        const userCredential = await signInWithEmailAndPassword(auth, email, password);
-        if (!userCredential.user.emailVerified) {
-          // Warn but still allow logging in during testing phase
-          setInfoMsg('⚠️ 아직 이메일 인증이 완료되지 않았습니다. 메일함에서 인증 메일을 클릭해 주세요.');
-        } else {
-          alert('로그인되었습니다!');
-        }
+        // Login flow using virtual email
+        await signInWithEmailAndPassword(auth, virtualEmail, password);
+        alert('로그인되었습니다!');
       }
       onClose();
     } catch (err) {
       console.error(err);
       if (err.code === 'auth/email-already-in-use') {
-        setErrorMsg('이미 사용 중인 이메일 주소입니다.');
+        setErrorMsg('이미 등록된 아이디입니다.');
       } else if (err.code === 'auth/invalid-email') {
-        setErrorMsg('유효하지 않은 이메일 형식입니다.');
+        setErrorMsg('유효하지 않은 아이디 형식입니다. (영문, 숫자 권장)');
       } else if (err.code === 'auth/weak-password') {
         setErrorMsg('비밀번호가 너무 약합니다. 6자 이상 지정해주세요.');
       } else if (err.code === 'auth/user-not-found' || err.code === 'auth/wrong-password' || err.code === 'auth/invalid-credential') {
-        setErrorMsg('이메일 또는 비밀번호가 올바르지 않습니다.');
+        setErrorMsg('아이디 또는 비밀번호가 올바르지 않습니다.');
       } else {
         setErrorMsg('처리 중 오류가 발생했습니다: ' + err.message);
       }
@@ -406,16 +293,16 @@ const AuthModal = ({ onClose, initialTab = 'signup' }) => {
                 </div>
               )}
 
-              {/* Email input (Always first) */}
+              {/* Login ID input (Always first) */}
               <div>
-                <label className="block text-[12px] font-extrabold text-slate-500 uppercase tracking-wider mb-2">이메일 계정</label>
+                <label className="block text-[12px] font-extrabold text-slate-500 uppercase tracking-wider mb-2">접속 아이디</label>
                 <div className="relative group">
-                  <Mail className="absolute left-3.5 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-400 group-focus-within:text-blue-600 transition-colors" />
+                  <User className="absolute left-3.5 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-400 group-focus-within:text-blue-600 transition-colors" />
                   <input
-                    type="email"
-                    value={email}
-                    onChange={e => setEmail(e.target.value)}
-                    placeholder="your@email.com"
+                    type="text"
+                    value={loginId}
+                    onChange={e => setLoginId(e.target.value)}
+                    placeholder="아이디 입력"
                     className="w-full bg-slate-50 border border-slate-200/80 focus:border-blue-600 focus:bg-white rounded-2xl py-3.5 pl-12 pr-4 text-slate-900 text-[15px] font-bold outline-none transition-all focus:ring-4 focus:ring-blue-600/5 placeholder:text-slate-400 placeholder:font-normal"
                     required
                   />
