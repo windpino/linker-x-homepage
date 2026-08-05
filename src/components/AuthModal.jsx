@@ -228,7 +228,7 @@ const AuthModal = ({ onClose, initialTab = 'signup' }) => {
             {/* Footer Trust Details */}
             <div className="z-10 border-t border-slate-800/80 pt-5 flex items-center justify-between text-[11px] text-slate-500 font-bold">
               <span className="flex items-center gap-1"><ShieldCheck size={12} className="text-emerald-500" /> SSL 보안 인증망</span>
-              <span>1566-8680</span>
+              <span>1588-2220</span>
             </div>
           </div>
 
@@ -391,7 +391,7 @@ const AuthModal = ({ onClose, initialTab = 'signup' }) => {
               <p className="text-center text-[12px] text-slate-400 font-bold">
                 {activeTab === 'signup' 
                   ? '가입 시 개인정보 수집 및 링커엑스 무료체험 약관에 동의하게 됩니다.' 
-                  : '비밀번호 분실 등 계정 관련 문의는 고객센터(1566-8680)로 연락해 주세요.'
+                  : '비밀번호 분실 등 계정 관련 문의는 고객센터(1588-2220)로 연락해 주세요.'
                 }
               </p>
             </form>

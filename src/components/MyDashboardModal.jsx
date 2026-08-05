@@ -466,7 +466,7 @@ const MyDashboardModal = ({ onClose, user }) => {
         {/* Modal Footer */}
         <div className="bg-white border-t border-slate-100 px-8 py-5 shrink-0 flex flex-col sm:flex-row items-center justify-between gap-3 text-[10px] text-slate-400 font-bold">
           <span>🛡️ SSL 보안 암호화 상태로 정보가 처리되고 있습니다.</span>
-          <span>링커엑스 대표 지원망: 1566-8680</span>
+          <span>링커엑스 대표 지원망: 1588-2220</span>
         </div>
 
       </div>

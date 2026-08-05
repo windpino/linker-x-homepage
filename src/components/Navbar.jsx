@@ -172,7 +172,7 @@ const Navbar = ({ onOpenInquiry, onNavigateToSupport, onNavigateToHome, user, su
             {/* Phone Hotline */}
             <div className="flex items-center gap-1 text-[#f97316] font-extrabold text-sm ml-2">
               <Phone className="h-4 w-4" />
-              <span>1566-8680</span>
+              <span>1588-2220</span>
             </div>
           </div>
 
