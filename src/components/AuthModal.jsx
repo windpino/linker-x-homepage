@@ -376,7 +376,7 @@ const AuthModal = ({ onClose, initialTab = 'signup' }) => {
                   <Sparkles className="h-4.5 w-4.5 text-blue-600 shrink-0 mt-0.5" />
                   <div>
                     <p className="text-[13px] text-blue-700 font-extrabold">가입 즉시 1개월 무료 혜택 제공!</p>
-                    <p className="text-[11.5px] text-slate-500 font-bold mt-0.5">추가로 친구 초대 시 평생 10% 요금 할인이 누적됩니다.</p>
+                    <p className="text-[11.5px] text-slate-500 font-bold mt-0.5">링커엑스 물류통합 시스템을 제한 없이 체험해 보세요.</p>
                   </div>
                 </div>
               )}
@@ -462,28 +462,6 @@ const AuthModal = ({ onClose, initialTab = 'signup' }) => {
                   />
                 </div>
               </div>
-
-              {/* Referral Code Input (Signup Only) */}
-              {activeTab === 'signup' && (
-                <div>
-                  <div className="flex items-center justify-between mb-2">
-                    <label className="block text-[12px] font-extrabold text-slate-500 uppercase tracking-wider">추천인 초대코드 (선택)</label>
-                    <span className="text-[11px] font-bold text-amber-600 flex items-center gap-0.5">
-                      <Gift size={10} className="text-amber-500" /> 평생 요금 누적 할인
-                    </span>
-                  </div>
-                  <div className="relative group">
-                    <Gift className="absolute left-3.5 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-400 group-focus-within:text-blue-600 transition-colors" />
-                    <input
-                      type="text"
-                      value={referredByInput}
-                      onChange={e => setReferredByInput(e.target.value)}
-                      placeholder="초대 코드 입력 시 10% 추가 할인 적용"
-                      className="w-full bg-slate-50 border border-slate-200/80 focus:border-blue-600 focus:bg-white rounded-2xl py-3.5 pl-12 pr-4 text-slate-900 text-[15px] font-bold outline-none transition-all focus:ring-4 focus:ring-blue-600/5 placeholder:text-slate-400 placeholder:font-normal"
-                    />
-                  </div>
-                </div>
-              )}
 
               {/* Submit button */}
               <button
