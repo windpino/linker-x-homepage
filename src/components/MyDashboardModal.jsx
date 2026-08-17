@@ -420,8 +420,8 @@ const MyDashboardModal = ({ onClose, user }) => {
                   <div className="bg-slate-100/50 border border-slate-200/60 rounded-3xl p-5 text-[11px] font-bold text-slate-600 leading-relaxed flex gap-2.5">
                     <ShieldCheck className="text-blue-600 shrink-0 mt-0.5" size={16} />
                     <div>
-                      <p className="text-slate-950 font-black">정식 버전 전환 및 결제 정보 연동 안내</p>
-                      <p className="mt-0.5">체험 기간 종료 3일 전 이메일 및 문자로 안내서가 발송되며, 이후 정식 요금제 선택 시 사용 중인 모든 데이터(재고, 판매 내역)가 유실 없이 그대로 승계됩니다.</p>
+                      <p className="text-slate-950 font-black">프리미엄 1:1 전담 유지보수 및 커스텀 지원 안내</p>
+                      <p className="mt-0.5">링커엑스는 각 회원사의 원활한 전산 운영을 위해 독자적인 기능 추가 개발, 스키마 튜닝 및 상시 CS 상담을 1:1 밀착 파트너십 형태로 전폭 관리합니다.</p>
                     </div>
                   </div>
                 </div>

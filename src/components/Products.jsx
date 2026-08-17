@@ -1,23 +1,23 @@
-﻿import React from 'react';
+import React from 'react';
 import { ShieldCheck, Cpu, Printer, ChevronRight, Sparkles } from 'lucide-react';
 
 const PRODUCTS_DATA = [
   {
     id: 'erp',
     category: 'ERP 솔루션',
-    title: 'Linker X 통합 ERP 패키지',
-    subtitle: '월 3만원 대의 가성비 스마트 ERP 솔루션',
-    description: '판매·재고·현장영업·수발주·도매몰까지 하나로 통합 관리하는 클라우드 기반 ERP 소프트웨어 패키지입니다.',
+    title: 'Linker X 프리미엄 통합 ERP',
+    subtitle: '소수정예 기업만을 위한 맞춤 설계 & 독자 서버 플랜',
+    description: '기업의 고유 물류 프로세스에 최적화된 독립 커스텀 기능과 전용 인프라 서버를 제공하는 하이엔드 통합 ERP 시스템입니다.',
     image: '/images/product_erp.png',
-    badge: 'BEST SELLER',
+    badge: 'PREMIUM CUSTOM',
     badgeColor: 'bg-blue-600',
     icon: ShieldCheck,
     features: [
-      '모바일 & PC 실시간 재고·출고 연동',
-      'AI 기반 차량별 자동 배차 및 물류 예측',
-      '1개월 무료 체험 제공 (가입비/위약금 0원)'
+      '회원사별 특화 기능 및 레이아웃 100% 커스텀',
+      '완전 독립형 하이엔드 클라우드 전용 서버 세팅',
+      '1:1 밀착 기술 지원 및 전담 유지보수 케어'
     ],
-    inquiryTopic: 'Linker X ERP 솔루션 도입 문의'
+    inquiryTopic: 'Linker X 프리미엄 ERP 도입 문의'
   },
   {
     id: 'hardware',

@@ -298,7 +298,7 @@ const Hero = ({ onOpenInquiry, onOpenInstall }) => {
                 onClick={() => onOpenInquiry('signup')}
                 className="group relative inline-flex items-center justify-center gap-3 bg-gradient-to-r from-emerald-500 via-teal-500 to-emerald-600 hover:from-emerald-400 hover:to-teal-400 text-slate-950 font-black text-lg px-10 py-5 rounded-2xl shadow-[0_0_40px_rgba(16,185,129,0.3)] hover:shadow-[0_0_55px_rgba(16,185,129,0.55)] transition-all duration-300 transform hover:-translate-y-1"
               >
-                <span>이메일로 3초 만에 시작하기 (1달 무료)</span>
+                <span>1:1 프리미엄 도입 컨설팅 신청하기</span>
                 <ArrowRight className="h-5 w-5 text-slate-950 group-hover:translate-x-1 transition-transform" />
               </button>
 
@@ -313,9 +313,9 @@ const Hero = ({ onOpenInquiry, onOpenInstall }) => {
 
             {/* Checklist benefits */}
             <div className="flex flex-wrap items-center justify-center gap-6 text-xs text-slate-400 font-bold pt-2 select-none">
-              <span className="flex items-center gap-1.5"><Check className="h-4.5 w-4.5 text-emerald-400" /> 가입비·설치비 전액 면제</span>
-              <span className="flex items-center gap-1.5"><Check className="h-4.5 w-4.5 text-emerald-400" /> 신규 가입 시 초기 마스터 세팅 무료 대행</span>
-              <span className="flex items-center gap-1.5"><Check className="h-4.5 w-4.5 text-emerald-400" /> 소개만 해도 평생 10% 추가 할인</span>
+              <span className="flex items-center gap-1.5"><Check className="h-4.5 w-4.5 text-emerald-400" /> 소수정예 50~100개 회원사 한정 운영</span>
+              <span className="flex items-center gap-1.5"><Check className="h-4.5 w-4.5 text-emerald-400" /> 회원사별 독립 커스텀 기능 전면 설계</span>
+              <span className="flex items-center gap-1.5"><Check className="h-4.5 w-4.5 text-emerald-400" /> 대표자 1:1 밀착 상시 CS 및 원격 지원</span>
             </div>
           </div>
         </div>
@@ -483,15 +483,15 @@ const Hero = ({ onOpenInquiry, onOpenInstall }) => {
           </h2>
           
           <p className="text-slate-400 text-sm sm:text-base leading-relaxed max-w-2xl mx-auto mb-10">
-            기존에 사용하시던 품목 리스트와 거래처 데이터 엑셀 파일을 전달해 주시면,<br />
-            무료체험 기간 중 즉시 업무에 투입할 수 있도록 마스터 DB 세팅을 100% 무료 지원합니다.
+            기존에 사용하시던 데이터를 전달해 주시면, 개별 독립 기능 커스텀 세팅과<br />
+            1:1 밀착 파트너 기술 지원을 통해 즉시 현장 가동이 가능한 환경을 구성해 드립니다.
           </p>
 
           <button 
             onClick={() => onOpenInquiry('signup')}
             className="group relative inline-flex items-center justify-center gap-3 bg-gradient-to-r from-emerald-500 to-teal-500 hover:from-emerald-400 hover:to-teal-400 text-slate-950 font-black text-base px-8 py-4.5 rounded-xl shadow-lg shadow-emerald-500/20 transition-all duration-300 transform hover:-translate-y-0.5"
           >
-            <span>무료 1개월 신청하고 마스터 세팅 지원받기</span>
+            <span>1:1 프리미엄 도입 컨설팅 상담 신청하기</span>
             <ArrowRight className="h-5 w-5 text-slate-950 group-hover:translate-x-1 transition-transform" />
           </button>
         </div>

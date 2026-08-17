@@ -1,35 +1,35 @@
-﻿import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { MessageSquare, X, Send, Sparkles, RefreshCw, ChevronRight, Check } from 'lucide-react';
 
 const QUICK_QUESTIONS = [
-  { text: "🎁 1개월 무료 체험 신청 방법", type: "free_trial" },
-  { text: "💰 월 3만원 외 추가 비용이 있나요?", type: "cost" },
-  { text: "🧾 수기 장부/엑셀 이관이 번거로워요", type: "data_transfer" }
+  { text: "💎 소수정예 프리미엄 도입 신청 방법", type: "free_trial" },
+  { text: "💳 프리미엄 커스텀 도입 비용 및 플랜", type: "cost" },
+  { text: "🧾 각 회사별 특화 기능 개발이 가능한가요?", type: "data_transfer" }
 ];
 
 const BOT_RESPONSES = {
   free_trial: {
-    answer: "링커엑스는 사장님들의 완벽한 확신을 위해 **가입비, 도입비, 위약금 0원**으로 모든 기능을 1개월간 100% 무료 체험하실 수 있는 기회를 제공합니다.\n\n아래의 버튼을 클릭하여 간단한 정보만 입력하시면 즉시 체험 신청이 완료됩니다!",
+    answer: "링커엑스는 다수의 대중을 타겟으로 하는 공장형 ERP가 아닙니다.\n\n**단 50~100개사 소수정예 기업만을 한정**하여 대표자가 직접 1:1 파트너 케어를 제공합니다. 아래 버튼을 눌러 기업 정보를 작성해 주시면 개별 심층 상담 일정을 조율해 드립니다.",
     showAction: true,
-    actionText: "1:1 무료 상담 접수",
-    actionTopic: "1개월 무료 체험 신청 (챗봇 접수)"
+    actionText: "1:1 프리미엄 도입 신청",
+    actionTopic: "소수정예 프리미엄 도입 신청 (챗봇 접수)"
   },
   cost: {
-    answer: "추가 비용은 **전혀 없습니다.**\n\n타사 ERP와 다르게 링커엑스는 **월 3만원** 단 하나의 요금제에 실시간 재고 연동, 모바일 수발주, AI 자동 배차 추천 등 프리미엄 기능까지 모두 포함되어 있습니다. 사용자 수 추가 비용도 전혀 발생하지 않으니 안심하세요!",
+    answer: "링커엑스는 획일화된 저가형 패키지가 아닌, **회원사별 맞춤 커스터마이징 및 독립형 전용 인프라 서버**를 구축해 드리는 고품격 솔루션입니다.\n\n초기 분석, 커스텀 개발 범위, 인프라 규모에 따라 개별 맞춤 견적을 제시해 드립니다. 자세한 상담을 원하시면 아래 버튼을 눌러주세요.",
     showAction: true,
-    actionText: "도입 요금 상담 받기",
-    actionTopic: "비용/요금 관련 문의 (챗봇 접수)"
+    actionText: "프리미엄 견적 설계 문의",
+    actionTopic: "도입 비용 및 전용 서버 문의 (챗봇 접수)"
   },
   data_transfer: {
-    answer: "기존에 쓰시던 엑셀 파일이나 심지어 수기 수첩의 사진만 전달해 주셔도 저희가 클라우드 시스템에 데이터 세팅을 완벽하게 마쳐 드립니다. 엔지니어가 **100% 무료로 대행**해 드리니 걱정 마세요!",
+    answer: "네, 가능합니다. 링커엑스의 가장 강력한 차별점은 **각 회원사 고유의 업무 흐름과 요구사항에 맞춘 독자적인 기능 개발 및 최적화 튜닝**이 전폭 지원된다는 점입니다.\n\n업종이나 프로세스 특성에 구애받지 않는 독립형 특화 솔루션을 구축해 드립니다.",
     showAction: true,
-    actionText: "장부 이관 무상 대행 신청",
-    actionTopic: "수기/엑셀 데이터 이관 문의 (챗봇 접수)"
+    actionText: "특화 기능 커스텀 상담 신청",
+    actionTopic: "회원사별 특화 기능 개발 문의 (챗봇 접수)"
   },
   default: {
-    answer: "궁금하신 점을 남겨주시면 현장 10년 차 대표가 직접 검토한 후 즉시 답변해 드리겠습니다.\n\n아래 버튼을 눌러 상담 접수를 남겨주시거나, 직접 연락처를 적어 주셔도 됩니다!",
+    answer: "궁금하신 점을 남겨주시면 현장 10년 차 대표가 직접 검토한 후 밀착 지원해 드리겠습니다.\n\n아래 버튼을 눌러 1:1 상담 접수를 완료해 주세요.",
     showAction: true,
-    actionText: "1:1 간편 도입 문의",
+    actionText: "1:1 프리미엄 도입 문의",
     actionTopic: "챗봇 직접 질문 및 상담 접수"
   }
 };
