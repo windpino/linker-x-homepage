@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { db, auth } from './firebase';
 import { onAuthStateChanged } from 'firebase/auth';
-import { doc, collection, onSnapshot, setDoc, query, orderBy } from 'firebase/firestore';
+import { doc, collection, onSnapshot, setDoc, getDoc, query, orderBy } from 'firebase/firestore';
 import Navbar from './components/Navbar';
 import Hero from './components/Hero';
 import Products from './components/Products';
@@ -23,8 +23,9 @@ const App = () => {
   const [inquiryType, setInquiryType] = useState('general');
   const [subView, setSubView] = useState('main');
 
-  // Firebase Auth State
+  // Firebase Auth State & User Role
   const [user, setUser] = useState(null);
+  const [userRole, setUserRole] = useState(null);
   const [isLoginOpen, setIsLoginOpen] = useState(false);
   const [isSignupOpen, setIsSignupOpen] = useState(false);
   const [isInstallWizardOpen, setIsInstallWizardOpen] = useState(false);
@@ -37,13 +38,36 @@ const App = () => {
     setIsStandaloneMode(isStandalone);
   }, []);
 
-  // Monitor auth state changes
+  // Monitor auth state changes with Role-based Routing
   useEffect(() => {
-    const unsub = onAuthStateChanged(auth, (currentUser) => {
+    const unsub = onAuthStateChanged(auth, async (currentUser) => {
       setUser(currentUser);
       if (currentUser) {
-        setSubView('dashboard');
+        try {
+          // Query users collection for user's role
+          const userDocSnap = await getDoc(doc(db, 'users', currentUser.uid));
+          if (userDocSnap.exists()) {
+            const data = userDocSnap.data();
+            const role = data.role || 'customer';
+            setUserRole(role);
+
+            // Role-based routing
+            if (role === 'admin' || role === 'super_admin') {
+              setSubView('dashboard'); // 관리자 대시보드
+            } else {
+              setSubView('support'); // customer: 주문/문의 화면
+            }
+          } else {
+            // Master/Admin direct login fallback
+            setUserRole('customer');
+            setSubView('support');
+          }
+        } catch (err) {
+          console.error('Error fetching user role:', err);
+          setSubView('support');
+        }
       } else {
+        setUserRole(null);
         setSubView('main');
       }
       setAuthLoading(false);

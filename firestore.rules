@@ -1,0 +1,89 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    
+    // Helper function to check if the user is authenticated
+    function isAuthenticated() {
+      return request.auth != null;
+    }
+
+    // Helper function to check if the user is a super admin
+    function isSuperAdmin() {
+      return isAuthenticated() && (
+        request.auth.token.role == 'super_admin' || 
+        request.auth.token.email == 'madmin' || 
+        request.auth.token.email == 'sadmin'
+      );
+    }
+
+    // Helper function to check if the user belongs to the company
+    function isCompanyUser(companyId) {
+      return isAuthenticated() && (
+        request.auth.token.companyId == companyId || 
+        isSuperAdmin()
+      );
+    }
+
+    // Rules for users collection (Unified Auth & Role-based Routing)
+    match /users/{userId} {
+      allow read, write: if isAuthenticated() && (request.auth.uid == userId || isSuperAdmin());
+      allow create: if isAuthenticated() && request.auth.uid == userId;
+    }
+
+    // Rules for companies collection
+    match /companies/{companyId} {
+      allow read, write: if isCompanyUser(companyId);
+      
+      match /{document=**} {
+        allow read, write: if isCompanyUser(companyId);
+      }
+    }
+
+    // Rules for global settings
+    match /settings/{document} {
+      allow read: if true;
+      allow write: if isSuperAdmin();
+    }
+
+    // Rules for customer service history
+    match /cs_history/{document} {
+      allow read: if isSuperAdmin();
+      allow write: if isAuthenticated();
+    }
+
+    match /csConsultations/{document} {
+      allow read: if isSuperAdmin();
+      allow write: if isAuthenticated();
+    }
+
+    // Rules for system notices
+    match /system_notices/{document} {
+      allow read: if true;
+      allow write: if isSuperAdmin();
+    }
+
+    // Rules for master schedules
+    match /master_schedules/{document} {
+      allow read: if true;
+      allow write: if isSuperAdmin();
+    }
+
+    // Rules for master schedule types
+    match /master_schedule_types/{document} {
+      allow read: if true;
+      allow write: if isSuperAdmin();
+    }
+
+    // Rules for agency inquiries
+    match /agency_inquiries/{document} {
+      allow read: if isSuperAdmin();
+      allow write: if true; // anyone can submit an inquiry
+    }
+
+    // Rules for master todos
+    match /master_todos/{document} {
+      allow read: if isSuperAdmin();
+      allow write: if isSuperAdmin();
+    }
+  }
+}

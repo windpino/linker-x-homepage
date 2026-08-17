@@ -8,13 +8,13 @@ const getCleanEnv = (val) => {
 };
 
 const firebaseConfig = {
-  apiKey: getCleanEnv(import.meta.env.VITE_FIREBASE_API_KEY),
-  authDomain: getCleanEnv(import.meta.env.VITE_FIREBASE_AUTH_DOMAIN),
-  projectId: getCleanEnv(import.meta.env.VITE_FIREBASE_PROJECT_ID),
-  storageBucket: getCleanEnv(import.meta.env.VITE_FIREBASE_STORAGE_BUCKET),
-  messagingSenderId: getCleanEnv(import.meta.env.VITE_FIREBASE_MESSAGING_SENDER_ID),
-  appId: getCleanEnv(import.meta.env.VITE_FIREBASE_APP_ID),
-  measurementId: getCleanEnv(import.meta.env.VITE_FIREBASE_MEASUREMENT_ID)
+  apiKey: getCleanEnv(import.meta.env.VITE_FIREBASE_API_KEY) || "AIzaSyAqx7nPiQ0mJGqnAGv28dO07C3-GQuqkpk",
+  authDomain: getCleanEnv(import.meta.env.VITE_FIREBASE_AUTH_DOMAIN) || "link-x-b8208.firebaseapp.com",
+  projectId: "link-x-b8208",
+  storageBucket: getCleanEnv(import.meta.env.VITE_FIREBASE_STORAGE_BUCKET) || "link-x-b8208.firebasestorage.app",
+  messagingSenderId: getCleanEnv(import.meta.env.VITE_FIREBASE_MESSAGING_SENDER_ID) || "236294239528",
+  appId: getCleanEnv(import.meta.env.VITE_FIREBASE_APP_ID) || "1:236294239528:web:8f735c42d36d6d1c434c1d",
+  measurementId: getCleanEnv(import.meta.env.VITE_FIREBASE_MEASUREMENT_ID) || "G-G8626RZH6X"
 };
 
 let app;

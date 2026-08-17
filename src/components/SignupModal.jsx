@@ -19,7 +19,7 @@ const SignupModal = ({ onClose, onOpenLogin }) => {
 
     if (!userDocSnap.exists()) {
       const now = new Date();
-      // 1. Create client user info in homepage 'users' (pending approval)
+      // 1. Create client user info in homepage 'users'
       await setDoc(userDocRef, {
         uid: user.uid,
         loginId: id.trim(),
@@ -27,7 +27,8 @@ const SignupModal = ({ onClose, onOpenLogin }) => {
         companyName: company.trim(),
         managerName: manager.trim(),
         phone: contact.trim(),
-        status: 'pending_approve',
+        role: 'customer',
+        status: 'active',
         createdAt: now.toISOString()
       });
 
