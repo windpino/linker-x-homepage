@@ -14,6 +14,7 @@ import LoginModal from './components/LoginModal';
 import SignupModal from './components/SignupModal';
 import Dashboard from './components/Dashboard';
 import InstallWizardModal from './components/InstallWizardModal';
+import MarketingCartoon from './components/MarketingCartoon';
 
 const App = () => {
   const [content, setContent] = useState({});
@@ -236,6 +237,9 @@ const App = () => {
 
           {/* Packaged Product Showcase (3 Categories) */}
           <Products onOpenInquiry={handleOpenInquiry} />
+
+          {/* 4-Cut Marketing Cartoon Section */}
+          <MarketingCartoon onOpenInquiry={handleOpenInquiry} />
 
           {/* Solution Section */}
           <Solution />

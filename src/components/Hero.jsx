@@ -313,7 +313,7 @@ const Hero = ({ onOpenInquiry, onOpenInstall }) => {
 
             {/* Checklist benefits */}
             <div className="flex flex-wrap items-center justify-center gap-6 text-xs text-slate-400 font-bold pt-2 select-none">
-              <span className="flex items-center gap-1.5"><Check className="h-4.5 w-4.5 text-emerald-400" /> 소수정예 50~100개 회원사 한정 운영</span>
+              <span className="flex items-center gap-1.5"><Check className="h-4.5 w-4.5 text-emerald-400" /> 프리미엄 맞춤 설계 회원사 운영</span>
               <span className="flex items-center gap-1.5"><Check className="h-4.5 w-4.5 text-emerald-400" /> 회원사별 독립 커스텀 기능 전면 설계</span>
               <span className="flex items-center gap-1.5"><Check className="h-4.5 w-4.5 text-emerald-400" /> 대표자 1:1 밀착 상시 CS 및 원격 지원</span>
             </div>
