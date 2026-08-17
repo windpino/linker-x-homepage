@@ -77,7 +77,8 @@ const InstallWizardModal = ({ onClose }) => {
     } catch (e) {
       console.log('window.close bypassed');
     }
-    onClose();
+    // 창이 닫히지 않는 브라우저 환경인 경우, 홈페이지에 머물지 않고 즉시 물류관리 포털 로그인 화면으로 직행
+    window.location.replace('https://linker-x-project.vercel.app/?mode=standalone');
   };
 
   return (
@@ -151,7 +152,7 @@ const InstallWizardModal = ({ onClose }) => {
                 onClick={handleConfirmFinish}
                 className="w-full bg-emerald-600 hover:bg-emerald-700 text-white font-extrabold py-3.5 rounded-2xl text-xs transition-all shadow-md shadow-emerald-600/10"
               >
-                확인 (창 닫기)
+                확인 (물류관리 포털 시작)
               </button>
             </>
           ) : (
