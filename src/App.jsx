@@ -150,20 +150,16 @@ const App = () => {
     );
   }
 
-  // Standalone Mode (Desktop PWA shortcut launch): Redirect directly to ERP Portal Login screen
+  // Standalone Mode (Desktop PWA shortcut launch): Render ERP Portal Login screen directly without URL bar (no black strip)
   if (isStandaloneMode) {
-    if (typeof window !== 'undefined') {
-      window.location.replace('https://linker-x-project.vercel.app/?mode=standalone');
-    }
     return (
-      <div className="min-h-screen bg-slate-950 flex flex-col items-center justify-center p-4 text-white font-sans">
-        <div className="flex flex-col items-center gap-5">
-          <div className="w-12 h-12 border-4 border-blue-500 border-t-transparent rounded-full animate-spin"></div>
-          <div className="text-center">
-            <h2 className="text-lg font-black text-white mb-1">링커엑스 물류관리 포털 연결 중...</h2>
-            <p className="text-xs font-bold text-slate-400">회원사 전용 보안 시스템으로 자동 진입합니다.</p>
-          </div>
-        </div>
+      <div style={{ width: '100vw', height: '100vh', margin: 0, padding: 0, overflow: 'hidden', backgroundColor: '#020617' }}>
+        <iframe
+          src="https://linker-x-project.vercel.app/?mode=standalone"
+          title="Linker X ERP System"
+          style={{ width: '100%', height: '100%', border: 'none', display: 'block' }}
+          allow="fullscreen; clipboard-read; clipboard-write; camera; microphone"
+        />
       </div>
     );
   }
@@ -178,7 +174,7 @@ const App = () => {
       <Navbar 
         onOpenLogin={() => setIsLoginOpen(true)}
         onOpenSignup={() => setIsSignupOpen(true)}
-        onOpenInstall={() => { window.location.href = 'https://linker-x-project.vercel.app/?install=true'; }}
+        onOpenInstall={() => setIsInstallWizardOpen(true)}
         onNavigateToSupport={() => { setSubView('support'); window.scrollTo({ top: 0, behavior: 'smooth' }); }}
         onNavigateToHome={() => { setSubView('main'); window.scrollTo({ top: 0, behavior: 'smooth' }); }}
         user={user}
@@ -192,7 +188,7 @@ const App = () => {
           {/* Hero Section */}
           <Hero 
             onOpenInquiry={() => setIsSignupOpen(true)}
-            onOpenInstall={() => { window.location.href = 'https://linker-x-project.vercel.app/?install=true'; }}
+            onOpenInstall={() => setIsInstallWizardOpen(true)}
             onOpenAgencyApply={() => handleOpenInquiry('agency')}
           />
 
