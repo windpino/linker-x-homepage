@@ -135,14 +135,14 @@ const InstallWizardModal = ({ onClose }) => {
                 바탕화면에 설치가 완료되었습니다.
               </h3>
               <p className="text-xs text-slate-400 font-bold mb-6 leading-relaxed max-w-xs mx-auto">
-                이제 바탕화면 또는 홈 화면에 생성된 링커엑스 바로가기 아이콘을 더블클릭하여 간편하게 접속하세요.
+                바탕화면에 생성된 링커엑스 바로가기 아이콘을 통해 물류관리 포털로 바로 접속하실 수 있습니다.
               </p>
 
               <button
                 onClick={onClose}
                 className="w-full bg-emerald-600 hover:bg-emerald-700 text-white font-extrabold py-3.5 rounded-2xl text-xs transition-all shadow-md shadow-emerald-600/10"
               >
-                마치기
+                확인
               </button>
             </>
           ) : (

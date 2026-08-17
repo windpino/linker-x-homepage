@@ -150,24 +150,20 @@ const App = () => {
     );
   }
 
-  // Centered standalone Login screen when launched from desktop shortcut
-  if (isStandaloneMode && !user) {
+  // Standalone Mode (Desktop PWA shortcut launch): Redirect directly to ERP Portal Login screen
+  if (isStandaloneMode) {
+    if (typeof window !== 'undefined') {
+      window.location.replace('https://linker-x-project.vercel.app/?mode=standalone');
+    }
     return (
-      <div className="min-h-screen bg-slate-950 flex items-center justify-center p-4 relative overflow-hidden font-sans">
-        {/* Cinematic glow background */}
-        <div className="absolute top-0 left-1/4 w-[600px] h-[600px] bg-blue-650/10 rounded-full blur-[150px] pointer-events-none" />
-        <div className="absolute bottom-10 right-1/4 w-[500px] h-[500px] bg-indigo-650/10 rounded-full blur-[130px] pointer-events-none" />
-        
-        <LoginModal 
-          onClose={() => {}} 
-          onOpenSignup={() => setIsSignupOpen(true)}
-        />
-        {isSignupOpen && (
-          <SignupModal 
-            onClose={() => setIsSignupOpen(false)} 
-            onOpenLogin={() => setIsSignupOpen(false)}
-          />
-        )}
+      <div className="min-h-screen bg-slate-950 flex flex-col items-center justify-center p-4 text-white font-sans">
+        <div className="flex flex-col items-center gap-5">
+          <div className="w-12 h-12 border-4 border-blue-500 border-t-transparent rounded-full animate-spin"></div>
+          <div className="text-center">
+            <h2 className="text-lg font-black text-white mb-1">링커엑스 물류관리 포털 연결 중...</h2>
+            <p className="text-xs font-bold text-slate-400">회원사 전용 보안 시스템으로 자동 진입합니다.</p>
+          </div>
+        </div>
       </div>
     );
   }
