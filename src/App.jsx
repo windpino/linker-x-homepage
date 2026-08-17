@@ -77,22 +77,40 @@ const App = () => {
 
   // Fetch CMS content and System Notices from Firebase
   useEffect(() => {
-    const contentUnsub = onSnapshot(doc(db, 'settings', 'homepage_content'), (snapshot) => {
-      if (snapshot.exists()) {
-        setContent(snapshot.data());
+    const contentUnsub = onSnapshot(
+      doc(db, 'settings', 'homepage_content'),
+      (snapshot) => {
+        if (snapshot.exists()) {
+          setContent(snapshot.data());
+        }
+      },
+      (error) => {
+        console.warn('Firestore homepage_content load warning:', error.message);
       }
-    });
+    );
 
     const noticesQuery = query(collection(db, 'system_notices'), orderBy('createdAt', 'desc'));
-    const noticesUnsub = onSnapshot(noticesQuery, (snapshot) => {
-      setNotices(snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() })));
-    });
-
-    const categoriesUnsub = onSnapshot(doc(db, 'settings', 'agencyCategories'), (snapshot) => {
-      if (snapshot.exists()) {
-        setAgencyCategories(snapshot.data().categories || []);
+    const noticesUnsub = onSnapshot(
+      noticesQuery,
+      (snapshot) => {
+        setNotices(snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() })));
+      },
+      (error) => {
+        console.warn('Firestore system_notices load warning:', error.message);
       }
-    });
+    );
+
+    const categoriesUnsub = onSnapshot(
+      doc(db, 'settings', 'agencyCategories'),
+      (snapshot) => {
+        if (snapshot.exists()) {
+          setAgencyCategories(snapshot.data().categories || []);
+        }
+      },
+      (error) => {
+        console.warn('Firestore agencyCategories load warning:', error.message);
+      }
+    );
 
     return () => {
       contentUnsub();
