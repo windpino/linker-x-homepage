@@ -71,12 +71,21 @@ const InstallWizardModal = ({ onClose }) => {
     return () => window.removeEventListener('appinstalled', handleAppInstalled);
   }, []);
 
+  const handleConfirmFinish = () => {
+    try {
+      window.close();
+    } catch (e) {
+      console.log('window.close bypassed');
+    }
+    onClose();
+  };
+
   return (
     <div
-      className="fixed inset-0 z-50 flex items-center justify-center p-4 animate-fade-in font-sans"
-      style={{ backgroundColor: 'rgba(15, 23, 42, 0.75)', backdropFilter: 'blur(8px)' }}
+      className="fixed inset-0 z-[999999] flex items-center justify-center p-4 animate-fade-in font-sans bg-slate-950"
+      style={{ backgroundColor: '#020617' }}
     >
-      <div className="relative w-[440px] bg-slate-900 border border-slate-800 text-white rounded-3xl shadow-[0_25px_50px_-12px_rgba(0,0,0,0.5)] overflow-hidden animate-in fade-in zoom-in-95 duration-200">
+      <div className="relative w-[440px] bg-slate-900 border border-slate-800 text-white rounded-3xl shadow-[0_25px_50px_-12px_rgba(0,0,0,0.7)] overflow-hidden animate-in fade-in zoom-in-95 duration-200">
         
         {/* Top Windows Style Title bar */}
         <div className="bg-slate-950 px-5 py-3 border-b border-slate-800/80 flex items-center justify-between">
@@ -85,7 +94,7 @@ const InstallWizardModal = ({ onClose }) => {
             <span className="text-xs font-black text-slate-350 tracking-tight">Linker X Setup Wizard</span>
           </div>
           <button
-            onClick={onClose}
+            onClick={handleConfirmFinish}
             className="text-slate-400 hover:text-white p-1 rounded transition-colors"
           >
             <X size={14} />
@@ -139,10 +148,10 @@ const InstallWizardModal = ({ onClose }) => {
               </p>
 
               <button
-                onClick={onClose}
+                onClick={handleConfirmFinish}
                 className="w-full bg-emerald-600 hover:bg-emerald-700 text-white font-extrabold py-3.5 rounded-2xl text-xs transition-all shadow-md shadow-emerald-600/10"
               >
-                확인
+                확인 (창 닫기)
               </button>
             </>
           ) : (
@@ -171,7 +180,7 @@ const InstallWizardModal = ({ onClose }) => {
                   다시 시도
                 </button>
                 <button
-                  onClick={onClose}
+                  onClick={handleConfirmFinish}
                   className="flex-1 bg-blue-600 hover:bg-blue-700 text-white font-extrabold py-3.5 rounded-2xl text-xs transition-all shadow-md shadow-blue-600/10"
                 >
                   닫기
