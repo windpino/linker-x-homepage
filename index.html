@@ -6,7 +6,7 @@
     <link rel="icon" type="image/x-icon" href="/favicon.ico" />
     <link rel="apple-touch-icon" href="/logo192.png" />
     <!-- Linker X main system handles the standalone PWA installation directly -->
-    <!-- <link rel="manifest" href="/manifest.json" /> -->
+    <link rel="manifest" href="/manifest.json" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Linker X - 물류·유통 통합 ERP 솔루션</title>
     <meta name="description" content="직원 1명 줄이는 프로그램 월 3만원. 판매·재고·현장영업·수발주·도매몰 통합관리 ERP 솔루션 링커엑스" />
@@ -41,7 +41,14 @@
         console.log('beforeinstallprompt event captured and saved globally');
       });
 
-
+      // Register Service Worker for PWA
+      if ('serviceWorker' in navigator) {
+        window.addEventListener('load', () => {
+          navigator.serviceWorker.register('/sw.js')
+            .then(reg => console.log('ServiceWorker registered with scope:', reg.scope))
+            .catch(err => console.error('ServiceWorker registration failed:', err));
+        });
+      }
     </script>
   </body>
 </html>

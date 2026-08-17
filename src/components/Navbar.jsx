@@ -4,7 +4,7 @@ import { auth } from '../firebase';
 import { signOut } from 'firebase/auth';
 import MyDashboardModal from './MyDashboardModal';
 
-const Navbar = ({ onOpenInquiry, onNavigateToSupport, onNavigateToHome, user, subView }) => {
+const Navbar = ({ onOpenLogin, onOpenSignup, onOpenInstall, onNavigateToSupport, onNavigateToHome, user, subView }) => {
   const [isOpen, setIsOpen] = useState(false);
   const [deferredPrompt, setDeferredPrompt] = useState(null);
   const [showInstallGuide, setShowInstallGuide] = useState(false);
@@ -146,9 +146,9 @@ const Navbar = ({ onOpenInquiry, onNavigateToSupport, onNavigateToHome, user, su
                 </div>
                 <button
                   onClick={() => setShowMyDashboard(true)}
-                  className="bg-blue-600 hover:bg-blue-700 text-white text-xs font-extrabold px-3 py-1.5 rounded-lg transition-all"
+                  className="bg-blue-600 hover:bg-blue-700 text-white text-xs font-extrabold px-3.5 py-1.5 rounded-xl transition-all shadow-md shadow-blue-650/15"
                 >
-                  계약 & 마이페이지
+                  개인 프로필 / 대시보드
                 </button>
                 <button
                   onClick={handleLogout}
@@ -159,12 +159,27 @@ const Navbar = ({ onOpenInquiry, onNavigateToSupport, onNavigateToHome, user, su
               </div>
             ) : (
               // Logged out UI
-              <button 
-                onClick={onOpenInquiry}
-                className="text-xs font-bold px-3 py-2 transition-all hover:text-[#1d4ed8]"
-              >
-                회원가입 / 로그인
-              </button>
+              <div className="flex items-center gap-2.5">
+                <button 
+                  onClick={onOpenInstall}
+                  className="text-xs font-bold px-3 py-2 transition-all text-slate-600 hover:text-emerald-600 flex items-center gap-1 border border-slate-200 rounded-xl hover:bg-slate-50"
+                >
+                  <Download size={13} className="text-emerald-500" />
+                  앱 설치
+                </button>
+                <button 
+                  onClick={onOpenLogin}
+                  className="text-xs font-bold px-3.5 py-2 transition-all text-slate-600 hover:text-blue-600"
+                >
+                  로그인
+                </button>
+                <button 
+                  onClick={onOpenSignup}
+                  className="text-xs font-extrabold px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-xl transition-all shadow-md shadow-blue-600/10 hover:shadow-blue-600/20"
+                >
+                  무료 회원가입
+                </button>
+              </div>
             )}
 
 
@@ -212,7 +227,7 @@ const Navbar = ({ onOpenInquiry, onNavigateToSupport, onNavigateToHome, user, su
                     onClick={() => { setIsOpen(false); setShowMyDashboard(true); }}
                     className="w-full text-center py-2.5 rounded-lg bg-blue-600 text-white font-extrabold hover:bg-blue-700"
                   >
-                    계약 & 마이페이지
+                    개인 프로필 / 대시보드
                   </button>
                   <button 
                     onClick={() => { setIsOpen(false); handleLogout(); }}
@@ -222,12 +237,27 @@ const Navbar = ({ onOpenInquiry, onNavigateToSupport, onNavigateToHome, user, su
                   </button>
                 </>
               ) : (
-                <button 
-                  onClick={() => { setIsOpen(false); onOpenInquiry(); }}
-                  className="w-full text-center py-2.5 rounded-lg border border-slate-200 text-slate-700 font-bold hover:bg-slate-50"
-                >
-                  회원가입 / 로그인
-                </button>
+                <div className="flex flex-col gap-2.5">
+                  <button 
+                    onClick={() => { setIsOpen(false); onOpenInstall(); }}
+                    className="w-full text-center py-2.5 rounded-lg border border-emerald-500/30 text-emerald-600 font-bold hover:bg-emerald-50 flex items-center justify-center gap-1.5"
+                  >
+                    <Download size={14} />
+                    링커엑스 앱 설치
+                  </button>
+                  <button 
+                    onClick={() => { setIsOpen(false); onOpenLogin(); }}
+                    className="w-full text-center py-2.5 rounded-lg border border-slate-200 text-slate-700 font-bold hover:bg-slate-50"
+                  >
+                    로그인
+                  </button>
+                  <button 
+                    onClick={() => { setIsOpen(false); onOpenSignup(); }}
+                    className="w-full text-center py-2.5 rounded-lg bg-blue-600 text-white font-extrabold hover:bg-blue-700"
+                  >
+                    무료 회원가입
+                  </button>
+                </div>
               )}
 
 

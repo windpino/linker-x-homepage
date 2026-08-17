@@ -25,8 +25,9 @@ import {
 } from 'lucide-react';
 
 const MyDashboardModal = ({ onClose, user }) => {
-  const [activeTab, setActiveTab] = useState('contract'); // 'contract' | 'billing' | 'inquiry'
+  const [activeTab, setActiveTab] = useState('profile'); // 'profile' | 'contract' | 'billing' | 'inquiry'
   const [userData, setUserData] = useState(null);
+  const [payments, setPayments] = useState([]);
   const [inquiries, setInquiries] = useState([]);
   const [inquirySubject, setInquirySubject] = useState('');
   const [inquiryCategory, setInquiryCategory] = useState('기능문의');
@@ -54,14 +55,57 @@ const MyDashboardModal = ({ onClose, user }) => {
     const fetchDashboardData = async () => {
       setIsLoadingData(true);
       try {
-        // 1) Fetch user specific trial parameters
+        // 1) Fetch user specific trial parameters from users
         const userDocRef = doc(db, 'users', user.uid);
         const userDocSnap = await getDoc(userDocRef);
+        let localUserData = null;
         if (userDocSnap.exists()) {
-          setUserData(userDocSnap.data());
+          localUserData = userDocSnap.data();
+          setUserData(localUserData);
         }
 
-        // 2) Fetch user inquiries
+        // 2) Fetch live Linker X company database & settings/licenseData & payments
+        if (localUserData && localUserData.companyId) {
+          const companyId = localUserData.companyId;
+          const companyDocRef = doc(db, 'companies', companyId);
+          const companyDocSnap = await getDoc(companyDocRef);
+          
+          let companyData = null;
+          if (companyDocSnap.exists()) {
+            companyData = companyDocSnap.data();
+          }
+
+          const licenseDocRef = doc(db, 'companies', companyId, 'settings', 'licenseData');
+          const licenseDocSnap = await getDoc(licenseDocRef);
+          let licenseValue = null;
+          if (licenseDocSnap.exists()) {
+            licenseValue = licenseDocSnap.data().value;
+          }
+
+          // Merge live settings
+          setUserData(prev => ({
+            ...prev,
+            companyName: companyData?.name || prev?.companyName || '',
+            managerName: companyData?.ceo || prev?.managerName || '',
+            phone: companyData?.managerContact || prev?.phone || '',
+            trialEndDate: licenseValue?.expiryDate || companyData?.expiryDate || prev?.trialEndDate || '',
+            plan: licenseValue?.plan || '체험판',
+            lastPaymentDate: licenseValue?.lastPaymentDate || null,
+            category: companyData?.category || prev?.category || '유통업'
+          }));
+
+          // Fetch payments subcollection
+          const payRef = collection(db, 'companies', companyId, 'payments');
+          const paySnap = await getDocs(payRef);
+          const payList = [];
+          paySnap.forEach((pDoc) => {
+            payList.push({ id: pDoc.id, ...pDoc.data() });
+          });
+          payList.sort((a, b) => new Date(b.paymentDate) - new Date(a.paymentDate));
+          setPayments(payList);
+        }
+
+        // 3) Fetch user inquiries
         await fetchInquiries();
       } catch (err) {
         console.error('Failed to load user contract info:', err);
@@ -166,8 +210,9 @@ const MyDashboardModal = ({ onClose, user }) => {
           </div>
 
           {/* Navigation Tabs */}
-          <div className="flex gap-2 mt-6">
+          <div className="flex gap-2 mt-6 flex-wrap">
             {[
+              { id: 'profile', label: '개인 프로필', icon: User },
               { id: 'contract', label: '계약 및 서비스 현황', icon: Calendar },
               { id: 'billing', label: '구매 및 결제 내역', icon: CreditCard },
               { id: 'inquiry', label: '1:1 고객지원 문의', icon: MessageSquare }
@@ -200,6 +245,113 @@ const MyDashboardModal = ({ onClose, user }) => {
             </div>
           ) : (
             <>
+              {/* Tab 0: Personal Profile */}
+              {activeTab === 'profile' && (
+                <div className="space-y-6">
+                  {/* Profile Summary Card */}
+                  <div className="bg-white border border-slate-200/60 rounded-3xl p-6 shadow-sm flex flex-col md:flex-row items-center justify-between gap-6">
+                    <div className="flex items-center gap-4">
+                      <div className="w-14 h-14 rounded-2xl bg-blue-600 flex items-center justify-center text-white shadow-md">
+                        <User size={28} />
+                      </div>
+                      <div>
+                        <span className="bg-blue-50 text-blue-700 text-[10px] font-black px-2.5 py-1 rounded-full">
+                          {userData?.status === 'approved' ? '서비스 활성' : '승인 대기 중'}
+                        </span>
+                        <h3 className="text-lg font-black text-slate-950 mt-1.5 tracking-tight">
+                          {userData?.managerName || '고객'} 대표님
+                        </h3>
+                        <p className="text-xs text-slate-400 font-bold mt-0.5">접속계정 ID: {userData?.loginId}</p>
+                      </div>
+                    </div>
+
+                    {/* D-Day display */}
+                    <div className="bg-slate-950 text-white rounded-[24px] px-6 py-4 text-center shadow-lg min-w-[150px] border border-slate-800 shrink-0">
+                      <p className="text-[10px] font-black uppercase text-blue-400 tracking-wider">남은 서비스 일수</p>
+                      <p className="text-2xl font-black mt-1 text-white">D-{remainingDays}</p>
+                      <p className="text-[9.5px] font-bold text-slate-400 mt-1">만료일: {userData?.trialEndDate ? new Date(userData.trialEndDate).toLocaleDateString() : '-'}</p>
+                    </div>
+                  </div>
+
+                  {/* Profile Details Grid */}
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    {/* User Profile Card */}
+                    <div className="bg-white border border-slate-200/50 rounded-3xl p-6 shadow-sm">
+                      <h4 className="text-xs font-black text-slate-900 mb-4 uppercase tracking-wider flex items-center gap-1.5">
+                        <span className="w-1.5 h-3 bg-blue-600 rounded-full" />
+                        개인 프로필 정보
+                      </h4>
+                      <div className="space-y-3 text-xs">
+                        <div className="flex justify-between py-2 border-b border-slate-50">
+                          <span className="text-slate-400 font-bold">대표자/담당자 성함</span>
+                          <span className="text-slate-900 font-extrabold">{userData?.managerName || '-'}</span>
+                        </div>
+                        <div className="flex justify-between py-2 border-b border-slate-50">
+                          <span className="text-slate-400 font-bold">연락처 전화번호</span>
+                          <span className="text-slate-900 font-extrabold">{userData?.phone || '-'}</span>
+                        </div>
+                        <div className="flex justify-between py-2 border-b border-slate-50">
+                          <span className="text-slate-400 font-bold">연동 회원사 ID</span>
+                          <span className="font-mono text-blue-600 bg-blue-50/50 px-2 py-0.5 rounded font-extrabold select-all">
+                            {userData?.companyId || '-'}
+                          </span>
+                        </div>
+                        <div className="flex justify-between py-2">
+                          <span className="text-slate-400 font-bold">가입 승인 상태</span>
+                          <span className={`font-black ${userData?.status === 'approved' ? 'text-emerald-600' : 'text-amber-500'}`}>
+                            {userData?.status === 'approved' ? '승인완료' : '대기중 (1588-2220 문의)'}
+                          </span>
+                        </div>
+                      </div>
+                    </div>
+
+                    {/* Company and Subscription Card */}
+                    <div className="bg-white border border-slate-200/50 rounded-3xl p-6 shadow-sm">
+                      <h4 className="text-xs font-black text-slate-900 mb-4 uppercase tracking-wider flex items-center gap-1.5">
+                        <span className="w-1.5 h-3 bg-indigo-650 rounded-full" />
+                        서비스 가입 현황
+                      </h4>
+                      <div className="space-y-3 text-xs">
+                        <div className="flex justify-between py-2 border-b border-slate-50">
+                          <span className="text-slate-400 font-bold">연동 회사명</span>
+                          <span className="text-slate-900 font-extrabold">{userData?.companyName || '-'}</span>
+                        </div>
+                        <div className="flex justify-between py-2 border-b border-slate-50">
+                          <span className="text-slate-400 font-bold">회사 업종 구분</span>
+                          <span className="text-slate-900 font-extrabold">{userData?.category || '유통업'}</span>
+                        </div>
+                        <div className="flex justify-between py-2 border-b border-slate-50">
+                          <span className="text-slate-400 font-bold">현재 요금제 등급</span>
+                          <span className="bg-indigo-50 text-indigo-700 px-2 py-0.5 rounded font-extrabold">
+                            {userData?.plan || '체험판'}
+                          </span>
+                        </div>
+                        <div className="flex justify-between py-2">
+                          <span className="text-slate-400 font-bold">최근 결제 내역</span>
+                          <span className="text-slate-900 font-extrabold">
+                            {userData?.lastPaymentDate ? new Date(userData.lastPaymentDate).toLocaleDateString() : '무료 체험 중'}
+                          </span>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* ERP Quick launcher */}
+                  <div className="bg-slate-900 text-white rounded-3xl p-6 border border-slate-800 flex flex-col sm:flex-row items-center justify-between gap-4">
+                    <div className="text-left">
+                      <h4 className="text-sm font-black text-white">링커엑스(Linker X) 물류 전산 가동</h4>
+                      <p className="text-[11px] text-slate-400 font-bold mt-1">지금 바로 ERP를 실행하여 재고 등록 및 주문 수집을 연동하세요.</p>
+                    </div>
+                    <button
+                      onClick={() => window.open('https://linker-x-project.vercel.app/', '_blank')}
+                      className="bg-blue-600 hover:bg-blue-500 text-white text-xs font-black px-5 py-3 rounded-2xl transition-all shadow-md shrink-0"
+                    >
+                      링커엑스 ERP 실행하기 ➔
+                    </button>
+                  </div>
+                </div>
+              )}
+
               {/* Tab 1: Contract Status */}
               {activeTab === 'contract' && (
                 <div className="space-y-6">
@@ -292,18 +444,39 @@ const MyDashboardModal = ({ onClose, user }) => {
                           </tr>
                         </thead>
                         <tbody className="divide-y divide-slate-100 text-slate-700">
+                          {payments.map((pay) => (
+                            <tr key={pay.id}>
+                              <td className="py-4.5 px-6 font-medium text-slate-500 text-left">
+                                {new Date(pay.paymentDate).toLocaleString()}
+                              </td>
+                              <td className="py-4.5 px-6 font-extrabold text-slate-900 text-left">
+                                {pay.planName}
+                              </td>
+                              <td className="py-4.5 px-6 font-extrabold text-blue-600 text-left">
+                                {pay.amount}
+                              </td>
+                              <td className="py-4.5 px-6 text-slate-500 text-left">
+                                {pay.paymentMethod || '신용카드'}
+                              </td>
+                              <td className="py-4.5 px-6 text-right">
+                                <span className="inline-block bg-emerald-50 text-emerald-700 text-[10px] font-black px-2.5 py-1 rounded-full border border-emerald-100">
+                                  {pay.status || '결제완료'}
+                                </span>
+                              </td>
+                            </tr>
+                          ))}
                           {/* We simulate the initial free trial transaction */}
                           <tr>
-                            <td className="py-4.5 px-6 font-medium text-slate-500">
+                            <td className="py-4.5 px-6 font-medium text-slate-500 text-left">
                               {userData ? new Date(userData.createdAt).toLocaleDateString() : '-'}
                             </td>
-                            <td className="py-4.5 px-6 font-extrabold text-slate-900">
+                            <td className="py-4.5 px-6 font-extrabold text-slate-900 text-left">
                               링커엑스 ERP 30일 무료 체험 프로모션
                             </td>
-                            <td className="py-4.5 px-6 font-extrabold text-blue-600">
+                            <td className="py-4.5 px-6 font-extrabold text-blue-600 text-left">
                               0원
                             </td>
-                            <td className="py-4.5 px-6 text-slate-500">
+                            <td className="py-4.5 px-6 text-slate-500 text-left">
                               웰컴 혜택 자동 적용
                             </td>
                             <td className="py-4.5 px-6 text-right">
@@ -318,9 +491,11 @@ const MyDashboardModal = ({ onClose, user }) => {
                   </div>
 
                   {/* Empty statement */}
-                  <p className="text-[10px] text-center text-slate-400 font-bold py-6">
-                    ※ 현재 무료 체험 프로모션 혜택이 적용 중이므로 별도 유료 구매 내역이 존재하지 않습니다.
-                  </p>
+                  {payments.length === 0 && (
+                    <p className="text-[10px] text-center text-slate-400 font-bold py-6">
+                      ※ 현재 무료 체험 프로모션 혜택이 적용 중이므로 별도 유료 구매 내역이 존재하지 않습니다.
+                    </p>
+                  )}
                 </div>
               )}
 

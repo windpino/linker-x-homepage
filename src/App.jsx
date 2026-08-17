@@ -1,4 +1,4 @@
-﻿import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect } from 'react';
 import { db, auth } from './firebase';
 import { onAuthStateChanged } from 'firebase/auth';
 import { doc, collection, onSnapshot, setDoc, query, orderBy } from 'firebase/firestore';
@@ -10,8 +10,10 @@ import Features from './components/Features';
 import Inquiry from './components/Inquiry';
 import Support from './components/Support';
 import LinkerXBot from './components/LinkerXBot';
-import AuthModal from './components/AuthModal';
+import LoginModal from './components/LoginModal';
+import SignupModal from './components/SignupModal';
 import Dashboard from './components/Dashboard';
+import InstallWizardModal from './components/InstallWizardModal';
 
 const App = () => {
   const [content, setContent] = useState({});
@@ -23,9 +25,17 @@ const App = () => {
 
   // Firebase Auth State
   const [user, setUser] = useState(null);
-  const [isAuthModalOpen, setIsAuthModalOpen] = useState(false);
-  const [authModalTab, setAuthModalTab] = useState('signup');
+  const [isLoginOpen, setIsLoginOpen] = useState(false);
+  const [isSignupOpen, setIsSignupOpen] = useState(false);
+  const [isInstallWizardOpen, setIsInstallWizardOpen] = useState(false);
+  const [isStandaloneMode, setIsStandaloneMode] = useState(false);
   const [authLoading, setAuthLoading] = useState(true);
+
+  // Detect standalone Launch
+  useEffect(() => {
+    const isStandalone = window.matchMedia('(display-mode: standalone)').matches || window.location.search.includes('mode=standalone');
+    setIsStandaloneMode(isStandalone);
+  }, []);
 
   // Monitor auth state changes
   useEffect(() => {
@@ -95,10 +105,7 @@ const App = () => {
     setIsInquiryOpen(true);
   };
 
-  const handleOpenAuthModal = (tab = 'signup') => {
-    setAuthModalTab(tab);
-    setIsAuthModalOpen(true);
-  };
+  // Auth modal helper removed since we split login/signup
 
   const handleStickySubmit = async (e) => {
     e.preventDefault();
@@ -143,6 +150,28 @@ const App = () => {
     );
   }
 
+  // Centered standalone Login screen when launched from desktop shortcut
+  if (isStandaloneMode && !user) {
+    return (
+      <div className="min-h-screen bg-slate-950 flex items-center justify-center p-4 relative overflow-hidden font-sans">
+        {/* Cinematic glow background */}
+        <div className="absolute top-0 left-1/4 w-[600px] h-[600px] bg-blue-650/10 rounded-full blur-[150px] pointer-events-none" />
+        <div className="absolute bottom-10 right-1/4 w-[500px] h-[500px] bg-indigo-650/10 rounded-full blur-[130px] pointer-events-none" />
+        
+        <LoginModal 
+          onClose={() => {}} 
+          onOpenSignup={() => setIsSignupOpen(true)}
+        />
+        {isSignupOpen && (
+          <SignupModal 
+            onClose={() => setIsSignupOpen(false)} 
+            onOpenLogin={() => setIsSignupOpen(false)}
+          />
+        )}
+      </div>
+    );
+  }
+
   // Common Layout Rendering
   return (
     <div className={`font-sans antialiased min-h-screen transition-all ${
@@ -151,7 +180,9 @@ const App = () => {
       
       {/* Navigation */}
       <Navbar 
-        onOpenInquiry={user ? () => setSubView('dashboard') : () => handleOpenAuthModal('signup')} 
+        onOpenLogin={() => setIsLoginOpen(true)}
+        onOpenSignup={() => setIsSignupOpen(true)}
+        onOpenInstall={() => setIsInstallWizardOpen(true)}
         onNavigateToSupport={() => { setSubView('support'); window.scrollTo({ top: 0, behavior: 'smooth' }); }}
         onNavigateToHome={() => { setSubView('main'); window.scrollTo({ top: 0, behavior: 'smooth' }); }}
         user={user}
@@ -164,7 +195,8 @@ const App = () => {
         <>
           {/* Hero Section */}
           <Hero 
-            onOpenInquiry={() => handleOpenAuthModal('signup')}
+            onOpenInquiry={() => setIsSignupOpen(true)}
+            onOpenInstall={() => setIsInstallWizardOpen(true)}
             onOpenAgencyApply={() => handleOpenInquiry('agency')}
           />
 
@@ -263,11 +295,17 @@ const App = () => {
         <LinkerXBot onOpenInquiry={handleOpenInquiry} />
       )}
 
-      {/* Authentication Modal Popup */}
-      {isAuthModalOpen && (
-        <AuthModal 
-          onClose={() => setIsAuthModalOpen(false)} 
-          initialTab={authModalTab}
+      {/* Authentication Modals */}
+      {isLoginOpen && (
+        <LoginModal 
+          onClose={() => setIsLoginOpen(false)} 
+          onOpenSignup={() => setIsSignupOpen(true)}
+        />
+      )}
+      {isSignupOpen && (
+        <SignupModal 
+          onClose={() => setIsSignupOpen(false)} 
+          onOpenLogin={() => setIsLoginOpen(true)}
         />
       )}
 
@@ -277,6 +315,13 @@ const App = () => {
           onClose={() => setIsInquiryOpen(false)} 
           onSubmitInquiry={handleSubmitInquiry}
           initialContent={prefilledContent}
+        />
+      )}
+
+      {/* Install Wizard Modal Popup */}
+      {isInstallWizardOpen && (
+        <InstallWizardModal 
+          onClose={() => setIsInstallWizardOpen(false)} 
         />
       )}
 
