@@ -178,7 +178,7 @@ const App = () => {
       <Navbar 
         onOpenLogin={() => setIsLoginOpen(true)}
         onOpenSignup={() => setIsSignupOpen(true)}
-        onOpenInstall={() => setIsInstallWizardOpen(true)}
+        onOpenInstall={() => { window.location.href = 'https://linker-x-project.vercel.app/?install=true'; }}
         onNavigateToSupport={() => { setSubView('support'); window.scrollTo({ top: 0, behavior: 'smooth' }); }}
         onNavigateToHome={() => { setSubView('main'); window.scrollTo({ top: 0, behavior: 'smooth' }); }}
         user={user}
@@ -192,7 +192,7 @@ const App = () => {
           {/* Hero Section */}
           <Hero 
             onOpenInquiry={() => setIsSignupOpen(true)}
-            onOpenInstall={() => setIsInstallWizardOpen(true)}
+            onOpenInstall={() => { window.location.href = 'https://linker-x-project.vercel.app/?install=true'; }}
             onOpenAgencyApply={() => handleOpenInquiry('agency')}
           />
 
