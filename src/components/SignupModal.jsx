@@ -101,6 +101,8 @@ const SignupModal = ({ onClose, onOpenLogin }) => {
         setErrorMsg('유효하지 않은 아이디 형식입니다. (영문, 숫자 권장)');
       } else if (err.code === 'auth/weak-password') {
         setErrorMsg('비밀번호가 너무 약합니다. 6자 이상 지정해주세요.');
+      } else if (err.code === 'auth/operation-not-allowed') {
+        setErrorMsg('파이어베이스 콘솔에서 [이메일/비밀번호 로그인] 기능이 활성화되지 않았습니다. Authentication > Sign-in method에서 이메일/비밀번호를 [사용 설정] 해주세요.');
       } else {
         setErrorMsg('회원가입 중 오류가 발생했습니다: ' + err.message);
       }

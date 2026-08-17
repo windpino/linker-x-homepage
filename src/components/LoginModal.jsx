@@ -34,6 +34,8 @@ const LoginModal = ({ onClose, onOpenSignup }) => {
         err.code === 'auth/invalid-credential'
       ) {
         setErrorMsg('아이디 또는 비밀번호가 올바르지 않습니다.');
+      } else if (err.code === 'auth/operation-not-allowed') {
+        setErrorMsg('파이어베이스 콘솔에서 [이메일/비밀번호 로그인] 기능이 활성화되지 않았습니다. Authentication > Sign-in method에서 이메일/비밀번호를 [사용 설정] 해주세요.');
       } else {
         setErrorMsg('로그인 중 오류가 발생했습니다: ' + err.message);
       }
